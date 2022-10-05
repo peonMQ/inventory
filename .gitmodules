@@ -1,7 +1,7 @@
 [submodule "definitions/mq"]
 	path = definitions/mq
 	url = https://github.com/projecteon/mq-definitions.git
-	branch = master
+	branch = main
 [submodule "definitions/imgui"]
 	path = definitions/imgui
 	url = https://github.com/projecteon/mq-imgui-definitions.git
