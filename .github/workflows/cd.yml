@@ -1,0 +1,32 @@
+name: Continuous Delivery - FVProject Pathcer
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      BundleFileName: "inventory.zip"
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Create Bundle  
+      shell: bash
+      run: |
+        # Pack files
+        7z a -tzip $BundleFileName *.lua
+        7z a -tzip $BundleFileName utils/*.lua
+
+    - name: Publish
+      uses: softprops/action-gh-release@v1
+      with:
+        files: "*.zip"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# https://github.com/marketplace/actions/easy-zip-files        
