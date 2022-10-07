@@ -20,6 +20,8 @@ jobs:
       run: |
         # Pack files
         7z a -tzip $BundleFileName *.lua
+        7z a -tzip $BundleFileName client/*.lua
+        7z a -tzip $BundleFileName common/*.lua
         7z a -tzip $BundleFileName utils/*.lua
 
     - name: Publish
