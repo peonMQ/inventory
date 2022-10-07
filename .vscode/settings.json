@@ -19,5 +19,6 @@
     "Lua.workspace.library": [
         "./definitions/mq",
         "./definitions/imgui",
+        "./utils/",
     ],
 }
