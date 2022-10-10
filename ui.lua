@@ -109,11 +109,11 @@ local itemsearch = function()
         ImGui.TableNextColumn()
         ImGui.Text(character)
         ImGui.TableNextColumn()
-        local clicked = ImGui.SmallButton("Link")
+        local clicked = ImGui.SmallButton("Link##"..item.Id)
         if clicked and item.ItemLink ~= "" then
           mq.cmdf("/say %s", item.ItemLink)
         end
-        ImGui.SameLine(60)
+        ImGui.SameLine(50)
         ImGui.Text(item.Name)
         ImGui.TableNextColumn()
         ImGui.Text(item.Amount)
