@@ -1,7 +1,6 @@
 --- @type Mq
 local mq = require('mq')
 local logger = require('utils/logging')
-local file = require('utils/file')
 local luautils = require('utils/lua')
 
 ---@type RunningDir
@@ -9,7 +8,7 @@ local runningDir = luautils.RunningDir:new()
 runningDir:AppendToPackagePath()
 
 --- @type SearchItem
-local searchItem = require('inventory/common/searchitem')
+local searchItem = require(runningDir:Parent():GetRelativeToMQLuaPath('common/searchitem'))
 
 local next = next
 local maxInventorySlots = 32

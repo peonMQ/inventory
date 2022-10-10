@@ -1,10 +1,23 @@
+--- @type Mq
+local mq = require('mq')
+
+local function findItemLink(id)
+  local item = mq.TLO.FindItem(id)
+  if item() ~= nil then
+      return item.ItemLink("CLICKABLE")()
+  end
+  
+  return nil
+end
+
 ---@class SearchItem
 ---@field public Id number
 ---@field public Name string
 ---@field public Amount number
 ---@field public InventorySlot number
 ---@field public BagSlot number
-local SearchItem = {Id = 0, Name = "", Amount = 0, InventorySlot = 0, BagSlot = 0}
+---@field public ItemLink string
+local SearchItem = {Id = 0, Name = "", Amount = 0, InventorySlot = 0, BagSlot = 0, ItemLink= ""}
 
 ---@param id number
 ---@param name string
@@ -20,6 +33,7 @@ function SearchItem:new (id, name, amount, inventorySlot, bagSlot)
   o.Amount = amount or error("Amount is required.")
   o.InventorySlot = inventorySlot or error("InventorySlot is required.")
   o.BagSlot = bagSlot or 0
+  o.ItemLink = findItemLink(id) or ""
   return o
 end
 
