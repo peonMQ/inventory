@@ -2,3 +2,11 @@
 	path = definitions/imgui
 	url = https://github.com/projecteon/mq-imgui-definitions.git
 	branch = main
+[submodule "definitions/mq"]
+	path = definitions/mq
+	url = https://github.com/projecteon/mq-definitions.git
+	branch = master
+[submodule "utils"]
+	path = utils
+	url = https://github.com/peonMQ/utils.git
+	branch = main
