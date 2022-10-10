@@ -41,8 +41,8 @@ jobs:
         Copy "*.lua" $releaseDir
         CopyReleaseContents '.\' $Directories
 
-        7z a -tzip $BundleFileName -r inventory/*.lua
-        7z a -tzip $BundleFileName utils/*.lua
+        7z a -tzip inventory.zip -r inventory/*.lua
+        7z a -tzip inventory.zip utils/*.lua
 
     - name: Publish
       uses: softprops/action-gh-release@v1
