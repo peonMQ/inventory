@@ -1,4 +1,4 @@
-name: Continuous Delivery - FVProject Pathcer
+name: Continuous Delivery - Inventory LUA
 
 on:
   release:
@@ -19,9 +19,11 @@ jobs:
       shell: bash
       run: |
         # Pack files
-        7z a -tzip $BundleFileName *.lua
-        7z a -tzip $BundleFileName client/*.lua
-        7z a -tzip $BundleFileName common/*.lua
+        mkdir inventory
+        cp *.lua /inventory
+        cp --parents client/*.lua /inventory
+        cp --parents common/*.lua /inventory
+        7z a -r -tzip $BundleFileName inventory/*.lua
         7z a -tzip $BundleFileName utils/*.lua
 
     - name: Publish

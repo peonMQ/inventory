@@ -4,11 +4,11 @@ local logger = require('utils/logging')
 local luautils = require('utils/lua')
 
 ---@type RunningDir
-local runningDir = luaUtils.RunningDir:new()
+local runningDir = luautils.RunningDir:new()
 runningDir:AppendToPackagePath()
 
 --- @type SearchItem
-local searchItem = require('common/searchitem')
+local searchItem = require('inventory/common/searchitem')
 
 local next = next
 local args = {...}
