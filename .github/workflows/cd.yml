@@ -20,9 +20,9 @@ jobs:
       run: |
         # Pack files
         mkdir inventory
-        cp *.lua /inventory
-        cp --parents client/*.lua /inventory
-        cp --parents common/*.lua /inventory
+        cp *.lua inventory/
+        cp --parents client/*.lua inventory/
+        cp --parents common/*.lua inventory/
         7z a -r -tzip $BundleFileName inventory/*.lua
         7z a -tzip $BundleFileName utils/*.lua
 
