@@ -16,22 +16,38 @@ jobs:
         submodules: recursive
 
     - name: Create Bundle  
-      shell: bash
+      shell: pwsh
       run: |
-        # Pack files
-        mkdir inventory
-        mkdir inventory/client
-        mkdir inventory/common
-        cp *.lua inventory/
-        cp -r client/*.lua inventory/client/
-        cp -r common/*.lua inventory/common/
-        7z a -r -tzip $BundleFileName inventory/*.lua
+        $excludeDirs = @('.github','.vscode','definitions','utils')
+        $releaseDir = "inventory\"
+        $Directories = Get-ChildItem -Directory "." -Exclude $excludeDirs 
+
+        function CopyReleaseContents($parentDir, $directories){
+
+            foreach($dir in $directories) {
+                $currentDir = ($parentDir + $dir.Name + "\")
+                $childReleaseDir = ($releaseDir + $currentDir)
+                New-Item -Path $childReleaseDir -ItemType Directory
+                Copy ($currentDir + "*.lua") $childReleaseDir 
+
+
+                $ChildDirectories = Get-ChildItem -Directory $dir.Name 
+                GetFolderContents ($currentDir+"\") $ChildDirectories
+
+            }
+        }
+
+        New-Item -Path $releaseDir -ItemType Directory
+        Copy "*.lua" $releaseDir
+        CopyReleaseContents '.\' $Directories
+
+        7z a -tzip $BundleFileName -r inventory/*.lua
         7z a -tzip $BundleFileName utils/*.lua
 
     - name: Publish
       uses: softprops/action-gh-release@v1
       with:
-        files: "*.zip"
+        files: "inventory.zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
