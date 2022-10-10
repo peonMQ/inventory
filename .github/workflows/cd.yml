@@ -32,7 +32,7 @@ jobs:
 
 
                 $ChildDirectories = Get-ChildItem -Directory $dir.Name 
-                GetFolderContents ($currentDir+"\") $ChildDirectories
+                CopyReleaseContents ($currentDir+"\") $ChildDirectories
 
             }
         }
