@@ -1,7 +1,8 @@
 {
     "editor.bracketPairColorization.enabled": true,
     "files.exclude": {
-        "definitions/": true
+        "definitions/": true,
+        "utils/": true,
     },
     "workbench.colorCustomizations": {
         "editorBracketHighlight.foreground1": "#5caeef",
