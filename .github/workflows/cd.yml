@@ -4,11 +4,14 @@ on:
   release:
     types: [published]
 
+env:
+  PROJECT: "inventory"
+
 jobs:
   release:
     runs-on: windows-latest
     env:
-      BundleFileName: "inventory.zip"
+      BUNDLE_FILE_NAME: "inventory.zip"
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -19,7 +22,7 @@ jobs:
       shell: pwsh
       run: |
         $excludeDirs = @('.github','.vscode','definitions','utils')
-        $releaseDir = "inventory\"
+        $releaseDir = $env:PROJECT + "\"
         $Directories = Get-ChildItem -Directory "." -Exclude $excludeDirs 
 
         function CopyReleaseContents($parentDir, $directories){
@@ -41,13 +44,13 @@ jobs:
         Copy "*.lua" $releaseDir
         CopyReleaseContents '.\' $Directories
 
-        7z a -tzip inventory.zip -r inventory/*.lua
-        7z a -tzip inventory.zip utils/*.lua
+        7z a -tzip $env:BUNDLE_FILE_NAME -r ($env:PROJECT + "/*.lua")
+        7z a -tzip $env:BUNDLE_FILE_NAME utils/*.lua
 
     - name: Publish
       uses: softprops/action-gh-release@v1
       with:
-        files: "inventory.zip"
+        files: inventory.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
