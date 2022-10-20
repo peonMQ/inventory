@@ -3,6 +3,7 @@ local mq = require 'mq'
 local packageMan = require('mq/PackageMan')
 local logger = require 'utils/logging'
 local plugin = require 'utils/plugins'
+local debugUtils = require 'utils/debug'
 --- @type SearchItem
 local searchItem = require('common/searchitem')
 
@@ -10,7 +11,7 @@ plugin.EnsureIsLoaded("mq2eqbc")
 
 local lfs = packageMan.Require('luafilesystem', 'lfs')
 
-local configDir = mq.configDir.."/"
+local configDir = mq.configDir
 local serverName = mq.TLO.MacroQuest.Server()
 local exportDir =  string.format("%s/%s/Export/Inventory", configDir, serverName)
 
