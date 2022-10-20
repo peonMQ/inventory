@@ -16,9 +16,11 @@ local maxInventorySlots = 32
 local maxBankSlots = 8
 
 ---@param item item
+---@param prefixNum? number
 ---@return SearchItem
-local function convert(item)
-  return searchItem:new(item.ID(), item.Name(), item.Stack(), item.ItemSlot(), item.ItemSlot2())
+local function convert(item, prefixNum)
+  print(prefixNum)
+  return searchItem:new(item.ID(), item.Name(), item.Stack(), item.ItemSlot() + (prefixNum or 0), item.ItemSlot2())
 end
 
 ---@param item item
@@ -26,7 +28,7 @@ end
 ---@return boolean
 local function matchesSearchTerms(item, searchTerms)
   local text = item.Name():lower()
-  for searchTerm in string.gmatch(searchTerms:lower(), "%S+") do 
+  for searchTerm in string.gmatch(searchTerms:lower(), "%S+") do
     if not text:find(searchTerm) then
       return false
     end
@@ -36,10 +38,11 @@ local function matchesSearchTerms(item, searchTerms)
 end
 
 ---@param item item
+---@param prefixNum? number
 ---@return boolean, SearchItem|nil
-local function matchItem(item, searchTerms)
+local function matchItem(item, searchTerms, prefixNum)
   if item() and matchesSearchTerms(item, searchTerms) then
-    return true, convert(item)
+    return true, convert(item, prefixNum)
   end
 
   return false, nil
@@ -47,13 +50,14 @@ end
 
 ---@param container item
 ---@param searchTerms string
+---@param prefixNum? number
 ---@return SearchItem[]
-local function findItemInContainer(container, searchTerms)
+local function findItemInContainer(container, searchTerms, prefixNum)
   logger.Debug("findItemInContainer <%s> <%s>", container.Name(), container.Container())
   local searchResult = {}
   for i=1,container.Container() do
     local item = container.Item(i)
-    local success, matchedItem = matchItem(item, searchTerms)
+    local success, matchedItem = matchItem(item, searchTerms, prefixNum)
     if success then
       searchResult[#searchResult+1] = matchedItem
     end
@@ -92,13 +96,13 @@ local function findItemInBank(searchTerms)
   local bank = mq.TLO.Me.Bank
   for i=1, maxBankSlots do
     local item = bank(i) --[[@as item]]
-    local success, matchedItem = matchItem(item, searchTerms)
+    local success, matchedItem = matchItem(item, searchTerms, 2000)
     if success then
       searchResult[#searchResult+1] = matchedItem
     end
 
     if item.Container() and item.Container() > 0 then
-      local containerSearchResult = findItemInContainer(item, searchTerms)
+      local containerSearchResult = findItemInContainer(item, searchTerms, 2000)
       luautils.TableConcat(searchResult, containerSearchResult)
     end
   end

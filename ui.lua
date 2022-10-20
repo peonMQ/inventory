@@ -84,7 +84,7 @@ local itemsearch = function()
     ImGui.SameLine(401)
     if ImGui.Button("Export", 50, 22) then 
       if mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
-        mq.cmd('/bcaa //lua run %s', runningDir:GetRelativeToMQLuaPath("client/export"))
+        mq.cmdf('/bcaa //lua run "%s"', runningDir:GetRelativeToMQLuaPath("client/export"))
       else
         logger.Warn("EQBC is required to do perform exports")
       end
