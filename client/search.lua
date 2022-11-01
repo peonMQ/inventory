@@ -2,6 +2,7 @@
 local mq = require('mq')
 local logger = require('utils/logging')
 local luautils = require('utils/lua')
+local broadcast = require('broadcast/broadcast')
 
 ---@type RunningDir
 local runningDir = luautils.RunningDir:new()
@@ -138,7 +139,7 @@ local function findAndReportItems(reportToo, searchTerms)
     logger.Warn("Searchtext is <nil>")
     return
   end
-  
+
   if #searchTerms < minSearchTextLength then
     logger.Warn("Searchtext is to short <%d>, must me minimum %d characters.", #searchTerms, minSearchTextLength)
     return
@@ -147,13 +148,14 @@ local function findAndReportItems(reportToo, searchTerms)
   local searchResults = findItems(searchTerms)
 
   if not next(searchResults) then
-    logger.Info("Done, nothing found for <"..searchTerms..">", reportToo)
+    logger.Info("Done, nothing found for <%s>", searchTerms)
   else
     for _,searchitem in ipairs(searchResults) do 
       mq.cmdf('/bct %s <%s>', reportToo, searchitem:ToEQBCString())
     end
-  
-    logger.Info("Done search for <"..searchTerms..">", reportToo)
+
+    logger.Info("Done search for <%s>", searchTerms)
+    broadcast.Success("Done search for <%s>", searchTerms)
   end
 end
 

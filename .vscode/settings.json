@@ -2,6 +2,7 @@
     "editor.bracketPairColorization.enabled": true,
     "files.exclude": {
         "definitions/": true,
+        "broadcast/": true,
         "utils/": true,
     },
     "workbench.colorCustomizations": {

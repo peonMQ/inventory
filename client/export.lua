@@ -2,6 +2,7 @@
 local mq = require('mq')
 local logger = require('utils/logging')
 local luautils = require('utils/lua')
+local broadcast = require('broadcast/broadcast')
 
 ---@type RunningDir
 local runningDir = luautils.RunningDir:new()
@@ -43,7 +44,6 @@ local function exportInventory()
       end
     end
   end
-  
 
   local bank = mq.TLO.Me.Bank
   for i=1, maxBankSlots do
@@ -71,6 +71,7 @@ local function exportInventory()
   local serverName = mq.TLO.MacroQuest.Server()
   local fileName =  string.format("%s/%s/Export/Inventory/%s.lua", configDir, serverName, mq.TLO.Me.Name())
   luautils.SaveTable(fileName, export)
+  broadcast.Success("Export completed.")
 end
 
 exportInventory()
