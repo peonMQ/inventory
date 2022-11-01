@@ -20,6 +20,7 @@
     "Lua.workspace.library": [
         "./definitions/mq",
         "./definitions/imgui",
+        "./broadcast/",
         "./utils/",
     ],
 }
