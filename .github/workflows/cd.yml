@@ -44,6 +44,7 @@ jobs:
 
         7z a -tzip $env:BUNDLE_FILE_NAME -r ($env:PROJECT + "/*.lua")
         7z a -tzip $env:BUNDLE_FILE_NAME utils/*.lua
+        7z a -tzip $env:BUNDLE_FILE_NAME broadcast/*.lua
 
     - name: Publish
       uses: softprops/action-gh-release@v1
