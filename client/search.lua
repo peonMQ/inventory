@@ -85,7 +85,7 @@ local function findItemInInventory(searchTerms)
       luautils.TableConcat(searchResult, containerSearchResult)
     end
   end
-  
+
   return searchResult
 end
 
@@ -107,14 +107,14 @@ local function findItemInBank(searchTerms)
       luautils.TableConcat(searchResult, containerSearchResult)
     end
   end
-  
+
   return searchResult
 end
 
 local function findItems(searchTerms)
   local searchResults = {}
   logger.Info("Starting search for <"..searchTerms..">")
-  
+
   -- Search inventory
   local inventorySearchResult = findItemInInventory(searchTerms:lower())
   luautils.TableConcat(searchResults, inventorySearchResult)
@@ -154,8 +154,8 @@ local function findAndReportItems(reportToo, searchTerms)
       mq.cmdf('/bct %s <%s>', reportToo, searchitem:ToEQBCString())
     end
 
-    logger.Info("Done search for <%s>", searchTerms)
-    broadcast.Success("Done search for <%s>", searchTerms)
+    logger.Info("Completed search for <%s>", searchTerms)
+    broadcast.Success("Completed search for <%s>", searchTerms)
   end
 end
 
