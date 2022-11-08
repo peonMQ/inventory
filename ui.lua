@@ -52,6 +52,8 @@ local ColumnID_Amount = 2
 local ColumnID_InventorySlot = 3
 local ColumnID_BagSlot = 4
 
+local tableFlags = bit32.bor(ImGuiTableFlags.PadOuterX, ImGuiTableFlags.Hideable, ImGuiTableFlags.Sortable, ImGuiTableFlags.ContextMenuInBody, ImGuiTableFlags.Reorderable)
+
 -- ImGui main function for rendering the UI window
 local itemsearch = function()
   openGUI, shouldDrawGUI = ImGui.Begin('Item Search', openGUI)
@@ -76,7 +78,7 @@ local itemsearch = function()
     end
 
     ImGui.SameLine(355)
-    if ImGui.Button("Clear", 42, 22) then 
+    if ImGui.Button("Clear", 42, 22) then
       searchResult = {}
       searchterms = ""
     end
@@ -93,7 +95,7 @@ local itemsearch = function()
     ImGui.SameLine(461)
     searchOffline, _ = ImGui.Checkbox('Incl. Offline', searchOffline)
 
-    if ImGui.BeginTable('search_result_table', 5) then
+    if ImGui.BeginTable('search_result_table', 5, tableFlags) then
       ImGui.TableSetupColumn('Character', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Character)
       ImGui.TableSetupColumn('Name', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Name)
       ImGui.TableSetupColumn('Amount', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Amount)
