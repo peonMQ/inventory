@@ -1,5 +1,12 @@
 --- @type Mq
 local mq = require 'mq'
+
+local packageMan = require('mq/PackageMan')
+packageMan.Require('luafilesystem', 'lfs')
+packageMan.Require('lua-cjson', 'cjson')
+packageMan.Require('lyaml')
+packageMan.Require('lsqlite3')
+
 local logger = require('utils/logging')
 local luaUtils = require('utils/lua')
 
@@ -8,8 +15,8 @@ local runningDir = luaUtils.RunningDir:new()
 runningDir:AppendToPackagePath()
 
 --- @type SearchItem
-local searchItem = require('common/searchitem')
-local exportSearch = require('common/exportsearch')
+local searchItem = require('./common/searchitem')
+local exportSearch = require('./common/exportsearch')
 --- @type ImGui
 require 'ImGui'
 
@@ -37,7 +44,9 @@ local function itemSearchReportEvent(line, sender, id, name, amount, inventorySl
   end 
 end
 
-mq.event("itemsearchreport", '[#1#(msg)] <#2#:#3#:#4#:#5#:#6#>', itemSearchReportEvent)
+local serverName = mq.TLO.MacroQuest.Server()
+mq.event("itemsearchreportdannet", string.format('[ %s_#1# ] <#2#:#3#:#4#:#5#:#6#>', serverName), itemSearchReportEvent)
+mq.event("itemsearchreporteqbc", '[#1#(msg)] <#2#:#3#:#4#:#5#:#6#>', itemSearchReportEvent)
 
 -- GUI Control variables
 local openGUI = true
@@ -69,11 +78,12 @@ local itemsearch = function()
       if searchOffline then
         searchResult = exportSearch(searchterms)
       end
-
-      if mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
+      if mq.TLO.Plugin("mq2dannet").IsLoaded() then
+        mq.cmdf('/dgae /lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("client/search"),  mq.TLO.Me.Name(), searchterms)
+      elseif mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
         mq.cmdf('/bcaa //lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("client/search"),  mq.TLO.Me.Name(), searchterms)
       else
-        logger.Warn("EQBC is required to do online searches")
+        logger.Warn("Dannet or EQBC is required to do online searches")
       end
     end
 

@@ -106,7 +106,7 @@ function SearchItem:HumanBagSlot ()
 end
 
 ---@return string
-function SearchItem:ToEQBCString ()
+function SearchItem:ToReportString ()
   return string.format("%s:%s:%s:%s:%s", self.Id, self.Name, self.Amount, self.InventorySlot, self.BagSlot)
 end
 

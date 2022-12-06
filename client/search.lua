@@ -149,8 +149,14 @@ local function findAndReportItems(reportToo, searchTerms)
   if not next(searchResults) then
     logger.Info("Done, nothing found for <%s>", searchTerms)
   else
-    for _,searchitem in ipairs(searchResults) do 
-      mq.cmdf('/bct %s <%s>', reportToo, searchitem:ToEQBCString())
+    for _,searchitem in ipairs(searchResults) do
+      if mq.TLO.Plugin("mq2dannet").IsLoaded() then
+        mq.cmdf('/dt %s <%s>', reportToo, searchitem:ToReportString())
+      elseif mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
+        mq.cmdf('/bct %s <%s>', reportToo, searchitem:ToReportString())
+      else
+        logger.Warn("Dannet or EQBC is required to do online searches")
+      end
     end
 
     logger.Info("Completed search for <%s>", searchTerms)
