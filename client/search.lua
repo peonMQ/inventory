@@ -20,7 +20,6 @@ local maxBankSlots = 8
 ---@param prefixNum? number
 ---@return SearchItem
 local function convert(item, prefixNum)
-  print(prefixNum)
   return searchItem:new(item.ID(), item.Name(), item.Stack(), item.ItemSlot() + (prefixNum or 0), item.ItemSlot2())
 end
 
