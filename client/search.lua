@@ -9,7 +9,7 @@ local runningDir = luautils.RunningDir:new()
 runningDir:AppendToPackagePath()
 
 --- @type SearchItem
-local searchItem = require(runningDir:Parent():GetRelativeToMQLuaPath('common/searchitem'))
+local searchItem = require('./common/searchitem')
 
 local next = next
 local args = {...}
