@@ -36,6 +36,7 @@ local function toInteger(value)
 end
 
 local function itemSearchReportEvent(line, sender, id, name, amount, inventorySlot, bagSlot)
+  sender = string.gsub(" "..sender, "%W%l", string.upper):sub(2)
   local searchedItem = searchItem:new(toInteger(id), name, toInteger(amount), toInteger(inventorySlot), toInteger(bagSlot))
   local toonResult = searchResult[sender] or {}
   table.insert(toonResult, searchedItem)
@@ -46,6 +47,7 @@ end
 
 local serverName = mq.TLO.MacroQuest.Server()
 mq.event("itemsearchreportdannet", string.format('[ %s_#1# ] <#2#:#3#:#4#:#5#:#6#>', serverName), itemSearchReportEvent)
+mq.event("itemsearchreportdannetself", string.format('[ -->(%s_#1#) ] <#2#:#3#:#4#:#5#:#6#>', serverName), itemSearchReportEvent)
 mq.event("itemsearchreporteqbc", '[#1#(msg)] <#2#:#3#:#4#:#5#:#6#>', itemSearchReportEvent)
 
 -- GUI Control variables
@@ -63,6 +65,8 @@ local ColumnID_BagSlot = 4
 
 local tableFlags = bit32.bor(ImGuiTableFlags.PadOuterX, ImGuiTableFlags.Hideable, ImGuiTableFlags.Sortable, ImGuiTableFlags.ContextMenuInBody, ImGuiTableFlags.Reorderable)
 
+local EnterKeyId = 13
+
 -- ImGui main function for rendering the UI window
 local itemsearch = function()
   openGUI, shouldDrawGUI = ImGui.Begin('Item Search', openGUI)
@@ -70,10 +74,11 @@ local itemsearch = function()
   if shouldDrawGUI then
     ImGui.PushItemWidth(288)
     searchterms, _ = ImGui.InputTextWithHint("##searchterms", "search terms", searchterms)
+    local isSearchFocused = ImGui.IsItemFocused()
     ImGui.PopItemWidth()
 
     ImGui.SameLine(300)
-    if ImGui.Button("Search", 50, 22) then 
+    if ImGui.Button("Search", 50, 22) or (isSearchFocused and ImGui.IsKeyPressed(EnterKeyId)) then
       searchResult = {}
       if searchOffline then
         searchResult = exportSearch(searchterms)
@@ -94,11 +99,13 @@ local itemsearch = function()
     end
 
     ImGui.SameLine(401)
-    if ImGui.Button("Export", 50, 22) then 
-      if mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
+    if ImGui.Button("Export", 50, 22) then
+      if mq.TLO.Plugin("mq2dannet").IsLoaded() then
+        mq.cmdf('/dgae /lua run "%s"', runningDir:GetRelativeToMQLuaPath("client/export"))
+      elseif mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
         mq.cmdf('/bcaa //lua run "%s"', runningDir:GetRelativeToMQLuaPath("client/export"))
       else
-        logger.Warn("EQBC is required to do perform exports")
+        logger.Warn("Dannet or EQBC is required to do perform exports")
       end
     end
 

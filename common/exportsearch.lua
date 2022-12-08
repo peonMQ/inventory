@@ -7,8 +7,6 @@ local debugUtils = require 'utils/debug'
 --- @type SearchItem
 local searchItem = require('common/searchitem')
 
-plugin.EnsureIsLoaded("mq2eqbc")
-
 local lfs = packageMan.Require('luafilesystem', 'lfs')
 
 local configDir = mq.configDir
@@ -85,9 +83,18 @@ end
 ---@return string[]
 local function fetchOnlineClients()
   local clients={}
-  if not mq.TLO.EQBC.Connected() then
-    logger.Debug("Not connected to EQBC, unable to find online clients for search.")
+  if not mq.TLO.Plugin("mq2dannet").IsLoaded() or (not mq.TLO.Plugin("mq2eqbc").IsLoaded() and not mq.TLO.EQBC.Connected()) then
+    logger.Debug("Not connected to Dannet or EQBC, unable to find online clients for search.")
     return clients
+  end
+
+  local connectedClients = {}
+
+  if mq.TLO.Plugin("mq2dannet").IsLoaded() then
+    local peers = mq.TLO.DanNet.Peers():gsub(serverName.."_", "")
+    connectedClients = string.gmatch(peers, "([^|]+)") --[[@as table]]
+  elseif mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
+    connectedClients = string.gmatch(mq.TLO.EQBC.Names(), "([^%s]+)") --[[@as table]]
   end
 
   for client in string.gmatch(mq.TLO.EQBC.Names(), "([^%s]+)") do
