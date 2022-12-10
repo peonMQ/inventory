@@ -14,7 +14,7 @@ local searchItem = require('inventory/common/searchitem')
 local next = next
 local args = {...}
 local maxInventorySlots = 32
-local maxBankSlots = 8
+local maxBankSlots = 16
 
 ---@param item item
 ---@param prefixNum? number
