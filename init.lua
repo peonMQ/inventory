@@ -8,7 +8,7 @@ packageMan.Require('lyaml')
 packageMan.Require('lsqlite3')
 
 local logger = require('utils/logging')
-local luaUtils = require('utils/lua')
+local luaUtils = require('utils/lua-paths')
 
 ---@type RunningDir
 local runningDir = luaUtils.RunningDir:new()

@@ -1,7 +1,7 @@
 --- @type Mq
 local mq = require('mq')
 local logger = require('utils/logging')
-local luautils = require('utils/lua')
+local luautils = require('utils/loaders/lua-table')
 local broadcast = require('broadcast/broadcast')
 
 --- @type SearchItem

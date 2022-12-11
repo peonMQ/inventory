@@ -1,12 +1,8 @@
 --- @type Mq
 local mq = require('mq')
 local logger = require('utils/logging')
-local luautils = require('utils/lua')
+local luautils = require('utils/lua-table')
 local broadcast = require('broadcast/broadcast')
-
----@type RunningDir
-local runningDir = luautils.RunningDir:new()
-runningDir:AppendToPackagePath()
 
 --- @type SearchItem
 local searchItem = require('inventory/common/searchitem')
