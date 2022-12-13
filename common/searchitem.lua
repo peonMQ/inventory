@@ -6,7 +6,7 @@ local function findItemLink(id)
   if item() ~= nil then
       return item.ItemLink("CLICKABLE")()
   end
-  
+
   return nil
 end
 
@@ -85,15 +85,20 @@ function SearchItem:HumanInventorySlot ()
       return "Powersource"
   elseif self.InventorySlot == 22 then
       return "Ammo"
-  elseif self.InventorySlot >= 23 and self.InventorySlot <=  32 then
+  elseif self.InventorySlot >= 23 and self.InventorySlot <= 32 then
       return "Bag"..(self.InventorySlot-22)
-  elseif self.InventorySlot >= 2000 and self.InventorySlot <=  2023 then
+  elseif self.InventorySlot >= 2000 and self.InventorySlot <= 2023 then
       return "Bank"..(self.InventorySlot-2000+1)
-  elseif self.InventorySlot >= 2500 and self.InventorySlot <=  2501 then
+  elseif self.InventorySlot >= 2500 and self.InventorySlot <= 2501 then
       return "SharedBank"..(self.InventorySlot-2500+1)
   end
 
   error("Unable to translate inventoryslot: "..self.InventorySlot)
+end
+
+---@return boolean
+function SearchItem:CanPickUp ()
+  return self.InventorySlot >= 23 and self.InventorySlot <= 32
 end
 
 ---@return string
@@ -107,7 +112,7 @@ end
 
 ---@return string
 function SearchItem:ToReportString ()
-  return string.format("%s:%s:%s:%s:%s", self.Id, self.Name, self.Amount, self.InventorySlot, self.BagSlot)
+  return string.format("%s;%s;%s;%s;%s", self.Id, self.Name, self.Amount, self.InventorySlot, self.BagSlot)
 end
 
 ---@param searchTerms string

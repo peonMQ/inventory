@@ -46,9 +46,9 @@ local function itemSearchReportEvent(line, sender, id, name, amount, inventorySl
 end
 
 local serverName = mq.TLO.MacroQuest.Server()
-mq.event("itemsearchreportdannet", string.format('[ %s_#1# ] <#2#:#3#:#4#:#5#:#6#>', serverName), itemSearchReportEvent)
-mq.event("itemsearchreportdannetself", string.format('[ -->(%s_#1#) ] <#2#:#3#:#4#:#5#:#6#>', serverName), itemSearchReportEvent)
-mq.event("itemsearchreporteqbc", '[#1#(msg)] <#2#:#3#:#4#:#5#:#6#>', itemSearchReportEvent)
+mq.event("itemsearchreportdannet", string.format('[ %s_#1# ] <#2#;#3#;#4#;#5#;#6#>', serverName), itemSearchReportEvent)
+mq.event("itemsearchreportdannetself", string.format('[ -->(%s_#1#) ] <#2#;#3#;#4#;#5#;#6#>', serverName), itemSearchReportEvent)
+mq.event("itemsearchreporteqbc", '[#1#(msg)] <#2#;#3#;#4#;#5#;#6#>', itemSearchReportEvent)
 
 -- GUI Control variables
 local openGUI = true
@@ -62,6 +62,7 @@ local ColumnID_Name = 1
 local ColumnID_Amount = 2
 local ColumnID_InventorySlot = 3
 local ColumnID_BagSlot = 4
+local ColumnID_Actions = 5
 
 local tableFlags = bit32.bor(ImGuiTableFlags.PadOuterX, ImGuiTableFlags.Hideable, ImGuiTableFlags.Sortable, ImGuiTableFlags.ContextMenuInBody, ImGuiTableFlags.Reorderable)
 
@@ -112,12 +113,13 @@ local itemsearch = function()
     ImGui.SameLine(461)
     searchOffline, _ = ImGui.Checkbox('Incl. Offline', searchOffline)
 
-    if ImGui.BeginTable('search_result_table', 5, tableFlags) then
+    if ImGui.BeginTable('search_result_table', 6, tableFlags) then
       ImGui.TableSetupColumn('Character', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Character)
       ImGui.TableSetupColumn('Name', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Name)
       ImGui.TableSetupColumn('Amount', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Amount)
       ImGui.TableSetupColumn('Inventory Slot', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_InventorySlot)
       ImGui.TableSetupColumn('Bag Slot', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_BagSlot)
+      ImGui.TableSetupColumn('', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Actions)
     end
 
     ImGui.TableHeadersRow()
@@ -140,6 +142,18 @@ local itemsearch = function()
         ImGui.Text(item:HumanInventorySlot())
         ImGui.TableNextColumn()
         ImGui.Text(item:HumanBagSlot())
+        ImGui.TableNextColumn()
+        if character == mq.TLO.Me.Name() and item:CanPickUp () then
+          local clickedPickupItem = ImGui.SmallButton("Pickup##"..item.Id)
+          if clickedPickupItem then
+            local packslot = item.InventorySlot - 22
+            if item.BagSlot > 0 then
+              mq.cmdf('/itemnotify in pack%d %d leftmouseup', packslot, item.BagSlot+1)
+            else
+              mq.cmdf('/itemnotify pack%d leftmouseup', packslot)
+            end
+          end
+        end
       end
     end
 
