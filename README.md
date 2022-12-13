@@ -20,6 +20,11 @@ Start the application by running the following command in-game.
 ```bash
 /lua run inventory/ui
 ```
+or
+
+```bash
+/lua run inventory
+```
 
 To be able to search in offline characters, an export for those characters must have been made.
 
@@ -27,3 +32,13 @@ To be able to search in offline characters, an export for those characters must 
 Using the `Export`button will make all your current logged in characters export their inventory and bank inventory into a `lua` file. The file will save to the following directory:
 
 `{MQConfigDir}\{ServerName}\Export\Inventory\{CharacterName}.lua`
+
+
+### Tips
+Courtesy of [@xackery](https://github.com/xackery)
+
+Setting this alias:
+`/alias /find /multiline ; /lua run inventory ; /lua run inventory/client/search ${Me.Name}`
+
+You can do quick searches by:
+`/find "Manastone"`
