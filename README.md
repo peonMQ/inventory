@@ -35,7 +35,7 @@ Using the `Export`button will make all your current logged in characters export 
 
 
 ### Tips
-Curtesy of [@xackery](https://github.com/xackery)
+Courtesy of [@xackery](https://github.com/xackery)
 
 Setting this alias:
 `/alias /find /multiline ; /lua run inventory ; /lua run inventory/client/search ${Me.Name}`
