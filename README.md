@@ -20,6 +20,11 @@ Start the application by running the following command in-game.
 ```bash
 /lua run inventory/ui
 ```
+or
+
+```bash
+/lua run inventory
+```
 
 To be able to search in offline characters, an export for those characters must have been made.
 
