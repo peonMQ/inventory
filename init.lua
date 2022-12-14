@@ -35,6 +35,30 @@ local function toInteger(value)
   return asNumber --[[@as integer]]
 end
 
+---@param character string
+---@param item SearchItem
+local function pickupItem(character, item)
+  local command = ""
+  local packslot = item.InventorySlot - 22
+  if item.BagSlot > 0 then
+    command = string.format('/itemnotify in pack%d %d leftmouseup', packslot, item.BagSlot+1)
+  else
+    command = string.format('/itemnotify pack%d leftmouseup', packslot)
+  end
+
+  if character == mq.TLO.Me.Name() then
+    mq.cmd(command)
+  else
+    if mq.TLO.Plugin("mq2dannet").IsLoaded() then
+      mq.cmdf('/dex %s %s"', character, command)
+    elseif mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
+      mq.cmdf('/bct %s /%s"', character, command)
+    else
+      logger.Warn("Dannet or EQBC is required to do remote item pickups")
+    end
+  end
+end
+
 local function itemSearchReportEvent(line, sender, id, name, amount, inventorySlot, bagSlot)
   sender = string.gsub(" "..sender, "%W%l", string.upper):sub(2)
   local searchedItem = searchItem:new(toInteger(id), name, toInteger(amount), toInteger(inventorySlot), toInteger(bagSlot))
@@ -42,7 +66,7 @@ local function itemSearchReportEvent(line, sender, id, name, amount, inventorySl
   table.insert(toonResult, searchedItem)
   if not searchResult[sender] then
     searchResult[sender] = toonResult
-  end 
+  end
 end
 
 local serverName = mq.TLO.MacroQuest.Server()
@@ -143,15 +167,10 @@ local itemsearch = function()
         ImGui.TableNextColumn()
         ImGui.Text(item:HumanBagSlot())
         ImGui.TableNextColumn()
-        if character == mq.TLO.Me.Name() and item:CanPickUp () then
+        if item:CanPickUp() then
           local clickedPickupItem = ImGui.SmallButton("Pickup##"..item.Id)
           if clickedPickupItem then
-            local packslot = item.InventorySlot - 22
-            if item.BagSlot > 0 then
-              mq.cmdf('/itemnotify in pack%d %d leftmouseup', packslot, item.BagSlot+1)
-            else
-              mq.cmdf('/itemnotify pack%d leftmouseup', packslot)
-            end
+            pickupItem(character, item)
           end
         end
       end
