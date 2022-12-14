@@ -40,19 +40,19 @@ end
 local function pickupItem(character, item)
   local command = ""
   local packslot = item.InventorySlot - 22
-  if item.BagSlot > 0 then
-    command = string.format('/itemnotify in pack%d %d leftmouseup', packslot, item.BagSlot+1)
+  if item.BagSlot > -1 then
+    command = string.format('/nomodkey /itemnotify in pack%d %d leftmouseup', packslot, item.BagSlot+1)
   else
-    command = string.format('/itemnotify pack%d leftmouseup', packslot)
+    command = string.format('/nomodkey /itemnotify pack%d leftmouseup', packslot)
   end
 
   if character == mq.TLO.Me.Name() then
     mq.cmd(command)
   else
     if mq.TLO.Plugin("mq2dannet").IsLoaded() then
-      mq.cmdf('/dex %s %s"', character, command)
+      mq.cmdf('/dex %s %s', character, command)
     elseif mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
-      mq.cmdf('/bct %s /%s"', character, command)
+      mq.cmdf('/bct %s /%s', character, command)
     else
       logger.Warn("Dannet or EQBC is required to do remote item pickups")
     end
