@@ -9,6 +9,9 @@ packageMan.Require('lsqlite3')
 
 local logger = require('utils/logging')
 local luaUtils = require('utils/lua-paths')
+local broadCastInterfaceFactory = require('broadcast/broadcastinterface')
+
+local broadcaster = broadCastInterfaceFactory()
 
 ---@type RunningDir
 local runningDir = luaUtils.RunningDir:new()
@@ -48,14 +51,10 @@ local function pickupItem(character, item)
 
   if character == mq.TLO.Me.Name() then
     mq.cmd(command)
+  elseif broadcaster then
+    broadcaster.ExecuteCommand(command, {character})
   else
-    if mq.TLO.Plugin("mq2dannet").IsLoaded() then
-      mq.cmdf('/dex %s %s"', character, command)
-    elseif mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
-      mq.cmdf('/bct %s /%s"', character, command)
-    else
-      logger.Warn("Dannet or EQBC is required to do remote item pickups")
-    end
+    logger.Warn("Dannet or EQBC is required to do remote item pickups")
   end
 end
 
@@ -108,10 +107,10 @@ local itemsearch = function()
       if searchOffline then
         searchResult = exportSearch(searchterms)
       end
-      if mq.TLO.Plugin("mq2dannet").IsLoaded() then
-        mq.cmdf('/dgae /lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("client/search"),  mq.TLO.Me.Name(), searchterms)
-      elseif mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
-        mq.cmdf('/bcaa //lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("client/search"),  mq.TLO.Me.Name(), searchterms)
+
+      if broadcaster then
+        local command = string.format('/lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("client/search"),  mq.TLO.Me.Name(), searchterms)
+        broadcaster.ExecuteCommand(command)
       else
         logger.Warn("Dannet or EQBC is required to do online searches")
       end
@@ -125,10 +124,9 @@ local itemsearch = function()
 
     ImGui.SameLine(401)
     if ImGui.Button("Export", 50, 22) then
-      if mq.TLO.Plugin("mq2dannet").IsLoaded() then
-        mq.cmdf('/dgae /lua run "%s"', runningDir:GetRelativeToMQLuaPath("client/export"))
-      elseif mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
-        mq.cmdf('/bcaa //lua run "%s"', runningDir:GetRelativeToMQLuaPath("client/export"))
+      if broadcaster then
+        local command = string.format('/lua run "%s"', runningDir:GetRelativeToMQLuaPath("client/export"))
+        broadcaster.ExecuteCommand(command)
       else
         logger.Warn("Dannet or EQBC is required to do perform exports")
       end
