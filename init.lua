@@ -43,10 +43,10 @@ end
 local function pickupItem(character, item)
   local command = ""
   local packslot = item.InventorySlot - 22
-  if item.BagSlot > 0 then
-    command = string.format('/itemnotify in pack%d %d leftmouseup', packslot, item.BagSlot+1)
+  if item.BagSlot > -1 then
+    command = string.format('/nomodkey /itemnotify in pack%d %d leftmouseup', packslot, item.BagSlot+1)
   else
-    command = string.format('/itemnotify pack%d leftmouseup', packslot)
+    command = string.format('/nomodkey /itemnotify pack%d leftmouseup', packslot)
   end
 
   if character == mq.TLO.Me.Name() then

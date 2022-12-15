@@ -17,7 +17,7 @@ end
 ---@field public InventorySlot number
 ---@field public BagSlot number
 ---@field public ItemLink string
-local SearchItem = {Id = 0, Name = "", Amount = 0, InventorySlot = 0, BagSlot = 0, ItemLink= ""}
+local SearchItem = {Id = 0, Name = "", Amount = 0, InventorySlot = 0, BagSlot = -1, ItemLink= ""}
 
 ---@param id number
 ---@param name string
@@ -32,7 +32,7 @@ function SearchItem:new (id, name, amount, inventorySlot, bagSlot)
   o.Name = name or error("Name is required.")
   o.Amount = amount or error("Amount is required.")
   o.InventorySlot = inventorySlot or error("InventorySlot is required.")
-  o.BagSlot = bagSlot or 0
+  o.BagSlot = bagSlot or -1
   o.ItemLink = findItemLink(id) or ""
   return o
 end
@@ -103,7 +103,7 @@ end
 
 ---@return string
 function SearchItem:HumanBagSlot ()
-  if self.BagSlot > 0 then
+  if self.BagSlot > -1 then
     return ""..self.BagSlot
   end
 
