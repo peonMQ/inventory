@@ -152,7 +152,7 @@ local itemsearch = function()
         ImGui.TableNextColumn()
         ImGui.Text(character)
         ImGui.TableNextColumn()
-        local clicked = ImGui.SmallButton("Link##"..item.Id)
+        local clicked = ImGui.SmallButton("Link##"..k..character)
         if clicked and item.ItemLink ~= "" then
           mq.cmdf("/say %s", item.ItemLink)
         end
@@ -166,7 +166,7 @@ local itemsearch = function()
         ImGui.Text(item:HumanBagSlot())
         ImGui.TableNextColumn()
         if item:CanPickUp() then
-          local clickedPickupItem = ImGui.SmallButton("Pickup##"..item.Id)
+          local clickedPickupItem = ImGui.SmallButton("Pickup##"..k..character)
           if clickedPickupItem then
             pickupItem(character, item)
           end

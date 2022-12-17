@@ -104,7 +104,7 @@ end
 ---@return string
 function SearchItem:HumanBagSlot ()
   if self.BagSlot > -1 then
-    return ""..self.BagSlot
+    return ""..(self.BagSlot+1)
   end
 
   return ""
