@@ -110,7 +110,7 @@ local itemsearch = function()
 
       if broadcaster then
         local command = string.format('/lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("client/search"),  mq.TLO.Me.Name(), searchterms)
-        broadcaster.ExecuteCommand(command)
+        broadcaster.ExecuteAllCommand(command, true)
       else
         logger.Warn("Dannet or EQBC is required to do online searches")
       end
@@ -126,7 +126,7 @@ local itemsearch = function()
     if ImGui.Button("Export", 50, 22) then
       if broadcaster then
         local command = string.format('/lua run "%s"', runningDir:GetRelativeToMQLuaPath("client/export"))
-        broadcaster.ExecuteCommand(command)
+        broadcaster.ExecuteAllCommand(command, true)
       else
         logger.Warn("Dannet or EQBC is required to do perform exports")
       end
