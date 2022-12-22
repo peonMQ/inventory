@@ -40,10 +40,16 @@ jobs:
         Copy "*.lua" $releaseDir
         CopyReleaseContents '.\' $Directories
 
+        function CopyLib($libDirectory) {
+            New-Item -Path ($releaseDir + "/" + $libDirectory)  -ItemType Directory
+            Copy ($libDirectory + "/*.lua") ($releaseDir + "/" + $libDirectory) 
+        }
+
+        CopyLib("utils")
+        CopyLib("utils/loaders")
+        CopyLib("broadcast")
+
         7z a -tzip $env:BUNDLE_FILE_NAME -r ($env:PROJECT + "/*.lua")
-        7z a -tzip $env:BUNDLE_FILE_NAME utils/*.lua
-        7z a -tzip $env:BUNDLE_FILE_NAME utils/loaders/*.lua
-        7z a -tzip $env:BUNDLE_FILE_NAME broadcast/*.lua
 
     - name: Publish
       uses: softprops/action-gh-release@v1
