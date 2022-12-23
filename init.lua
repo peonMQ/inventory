@@ -18,8 +18,8 @@ local runningDir = luaUtils.RunningDir:new()
 runningDir:AppendToPackagePath()
 
 --- @type SearchItem
-local searchItem = require('./common/searchitem')
-local exportSearch = require('./common/exportsearch')
+local searchItem = require('common/searchitem')
+local exportSearch = require('common/exportsearch')
 --- @type ImGui
 require 'ImGui'
 
@@ -109,7 +109,7 @@ local itemsearch = function()
       end
 
       if broadcaster then
-        local command = string.format('/lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("client/search"),  mq.TLO.Me.Name(), searchterms)
+        local command = string.format('/lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("search"),  mq.TLO.Me.Name(), searchterms)
         broadcaster.ExecuteAllCommand(command, true)
       else
         logger.Warn("Dannet or EQBC is required to do online searches")
@@ -125,7 +125,7 @@ local itemsearch = function()
     ImGui.SameLine(401)
     if ImGui.Button("Export", 50, 22) then
       if broadcaster then
-        local command = string.format('/lua run "%s"', runningDir:GetRelativeToMQLuaPath("client/export"))
+        local command = string.format('/lua run "%s"', runningDir:GetRelativeToMQLuaPath("export"))
         broadcaster.ExecuteAllCommand(command, true)
       else
         logger.Warn("Dannet or EQBC is required to do perform exports")
