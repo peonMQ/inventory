@@ -58,7 +58,7 @@ local function exportInventory()
     end
   end
 
-  if not next(export) then
+  if not next(export.bank) or not next(export.inventory)  then
     logger.Info("No items to export.")
     return
   end
