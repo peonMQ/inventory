@@ -104,6 +104,24 @@ local function fetchOnlineClients()
 end
 
 ---@param searchTerms string
+---@param exportFile string
+---@return string, SearchItem
+local function searchFile(searchTerms, exportFile)
+  local _, _, characterName = string.find(exportFile, "(%a+).lua")
+  logger.Debug('Starting search for character \a-y[%s]\ax', characterName)
+  local exportItems = mapExport(loadExportInventory(exportFile))
+  local toonFoundItems = {}
+  for _, item in pairs(exportItems) do
+    if item:MatchesSearchTerms(searchTerms) then
+      logger.Debug('Matched item [] for character []', item.Name, characterName)
+      table.insert(toonFoundItems, item)
+    end
+  end
+
+  return characterName, toonFoundItems
+end
+
+---@param searchTerms string
 ---@return { string: SearchItem[]}
 local function search(searchTerms)
   logger.Debug('Starting search in export files for offline characters')
@@ -111,17 +129,7 @@ local function search(searchTerms)
   local exportFiles = getExportFiles(exportDir, clients)
   local foundItems = {}
   for _,exportFile in ipairs(exportFiles) do
-    local _, _, characterName = string.find(exportFile, "(%a+).lua")
-    logger.Debug('Starting search for character \a-y[%s]\ax', characterName)
-    local exportItems = mapExport(loadExportInventory(exportFile))
-    local toonFoundItems = {}
-    for _, item in pairs(exportItems) do
-      if item:MatchesSearchTerms(searchTerms) then
-        logger.Debug('Matched item [] for character []', item.Name, characterName)
-        table.insert(toonFoundItems, item)
-      end
-    end
-
+    local characterName, toonFoundItems = searchFile(searchTerms, exportFile)
     if next(toonFoundItems) then
       foundItems[characterName] = toonFoundItems
     end
