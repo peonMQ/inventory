@@ -122,7 +122,7 @@ local function searchFile(searchTerms, exportFile)
 end
 
 ---@param searchTerms string
----@return { string: SearchItem[]}
+---@return table<string, { online: bool, searchResult: SearchItem }>
 local function search(searchTerms)
   logger.Debug('Starting search in export files for offline characters')
   local clients = fetchOnlineClients()
@@ -131,7 +131,7 @@ local function search(searchTerms)
   for _,exportFile in ipairs(exportFiles) do
     local characterName, toonFoundItems = searchFile(searchTerms, exportFile)
     if next(toonFoundItems) then
-      foundItems[characterName] = toonFoundItems
+      foundItems[characterName] = { online = false, searchResult = toonFoundItems }
     end
   end
 

@@ -23,8 +23,7 @@ local exportSearch = require('common/exportsearch')
 --- @type ImGui
 require 'ImGui'
 
-
----@type table<string, SearchItem>
+---@type table<string, { online: bool, searchResult: SearchItem }>
 local searchResult = {}
 
 ---@param value string
@@ -61,8 +60,8 @@ end
 local function itemSearchReportEvent(line, sender, id, name, amount, inventorySlot, bagSlot)
   sender = string.gsub(" "..sender, "%W%l", string.upper):sub(2)
   local searchedItem = searchItem:new(toInteger(id), name, toInteger(amount), toInteger(inventorySlot), toInteger(bagSlot))
-  local toonResult = searchResult[sender] or {}
-  table.insert(toonResult, searchedItem)
+  local toonResult = searchResult[sender] or { online = true, searchResult = {} }
+  table.insert(toonResult.searchResult, searchedItem)
   if not searchResult[sender] then
     searchResult[sender] = toonResult
   end
@@ -148,9 +147,15 @@ local itemsearch = function()
 
     for character, result in pairs(searchResult) do
       ImGui.TableNextRow()
-      for k, item in ipairs (result) do
+      for k, item in ipairs (result.searchResult) do
         ImGui.TableNextColumn()
-        ImGui.Text(character)
+        if result.online then
+          ImGui.PushStyleColor(ImGuiCol.Text, 0.56, 0.8, 0.32, 1)
+          ImGui.Text(character)
+          ImGui.PopStyleColor(1)
+        else
+          ImGui.Text(character)
+        end
         ImGui.TableNextColumn()
         local clicked = ImGui.SmallButton("Link##"..k..character)
         if clicked and item.ItemLink ~= "" then
