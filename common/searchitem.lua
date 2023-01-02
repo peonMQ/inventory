@@ -10,14 +10,24 @@ local function findItemLink(id)
   return nil
 end
 
+local function findItemIcon(id)
+  local item = mq.TLO.FindItem(id)
+  if item() ~= nil then
+      return item.Icon()
+  end
+
+  return nil
+end
+
 ---@class SearchItem
 ---@field public Id number
 ---@field public Name string
+---@field public Icon number
 ---@field public Amount number
 ---@field public InventorySlot number
 ---@field public BagSlot number
 ---@field public ItemLink string
-local SearchItem = {Id = 0, Name = "", Amount = 0, InventorySlot = 0, BagSlot = -1, ItemLink= ""}
+local SearchItem = {Id = 0, Name = "", Icon = 0, Amount = 0, InventorySlot = 0, BagSlot = -1, ItemLink= ""}
 
 ---@param id number
 ---@param name string
@@ -34,6 +44,7 @@ function SearchItem:new (id, name, amount, inventorySlot, bagSlot)
   o.InventorySlot = inventorySlot or error("InventorySlot is required.")
   o.BagSlot = bagSlot or -1
   o.ItemLink = findItemLink(id) or ""
+  o.Icon = findItemIcon(id) or 0
   return o
 end
 

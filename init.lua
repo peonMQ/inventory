@@ -23,7 +23,19 @@ local exportSearch = require('common/exportsearch')
 --- @type ImGui
 require 'ImGui'
 
----@type table<string, { online: bool, searchResult: SearchItem }>
+-- Constants
+local ICON_WIDTH = 20
+local ICON_HEIGHT = 20
+local COUNT_X_OFFSET = 39
+local COUNT_Y_OFFSET = 23
+local EQ_ICON_OFFSET = 500
+local INVENTORY_DELAY_SECONDS = 0
+
+-- EQ Texture Animation references
+local animItems = mq.FindTextureAnimation("A_DragItem")
+local animBox = mq.FindTextureAnimation("A_RecessedBox")
+
+---@type table<string, { online: boolean, searchResult: SearchItem }>
 local searchResult = {}
 
 ---@param value string
@@ -40,6 +52,10 @@ end
 ---@param character string
 ---@param item SearchItem
 local function pickupItem(character, item)
+  if item.InventorySlot >= 2000 then
+    return
+  end
+
   local command = ""
   local packslot = item.InventorySlot - 22
   if item.BagSlot > -1 then
@@ -80,15 +96,39 @@ local searchterms = ""
 local searchOffline = false
 
 local ColumnID_Character = 0
-local ColumnID_Name = 1
-local ColumnID_Amount = 2
-local ColumnID_InventorySlot = 3
-local ColumnID_BagSlot = 4
-local ColumnID_Actions = 5
+local ColumnID_Icon = 1
+local ColumnID_Name = 2
+local ColumnID_Amount = 3
+local ColumnID_InventorySlot = 4
+local ColumnID_BagSlot = 5
 
 local tableFlags = bit32.bor(ImGuiTableFlags.PadOuterX, ImGuiTableFlags.Hideable, ImGuiTableFlags.Sortable, ImGuiTableFlags.ContextMenuInBody, ImGuiTableFlags.Reorderable)
 
 local EnterKeyId = 13
+
+
+
+---Draws the individual item icon in the bag.
+---@param character string
+---@param online boolean
+---@param item SearchItem The item object
+local function draw_item_icon(character, online, item)
+  if not item.Icon then
+    return
+  end
+
+  -- Reset the cursor to start position, then fetch and draw the item icon
+  local cursor_x, cursor_y = ImGui.GetCursorPos()
+  animItems:SetTextureCell(item.Icon - EQ_ICON_OFFSET)
+  ImGui.DrawTextureAnimation(animItems, ICON_WIDTH, ICON_HEIGHT)
+
+  if ImGui.IsItemClicked(ImGuiMouseButton.Left) and online then
+    pickupItem(character, item)
+  end
+
+  -- Right-click mouse works on bag items like in-game action
+  -- if ImGui.IsItemClicked(ImGuiMouseButton.Right) then mq.cmdf('/useitem "%s"', item.Name) end
+end
 
 -- ImGui main function for rendering the UI window
 local itemsearch = function()
@@ -136,11 +176,11 @@ local itemsearch = function()
 
     if ImGui.BeginTable('search_result_table', 6, tableFlags) then
       ImGui.TableSetupColumn('Character', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Character)
+      ImGui.TableSetupColumn('', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Icon)
       ImGui.TableSetupColumn('Name', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Name)
       ImGui.TableSetupColumn('Amount', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Amount)
       ImGui.TableSetupColumn('Inventory Slot', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_InventorySlot)
       ImGui.TableSetupColumn('Bag Slot', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_BagSlot)
-      ImGui.TableSetupColumn('', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Actions)
     end
 
     ImGui.TableHeadersRow()
@@ -157,25 +197,18 @@ local itemsearch = function()
           ImGui.Text(character)
         end
         ImGui.TableNextColumn()
-        local clicked = ImGui.SmallButton("Link##"..k..character)
-        if clicked and item.ItemLink ~= "" then
+          draw_item_icon(character, result.online, item)
+        ImGui.TableNextColumn()
+        ImGui.Text(item.Name)
+        if ImGui.IsItemClicked(ImGuiMouseButton.Left) and item.ItemLink ~= "" then
           mq.cmdf("/say %s", item.ItemLink)
         end
-        ImGui.SameLine(50)
-        ImGui.Text(item.Name)
         ImGui.TableNextColumn()
         ImGui.Text(item.Amount)
         ImGui.TableNextColumn()
         ImGui.Text(item:HumanInventorySlot())
         ImGui.TableNextColumn()
         ImGui.Text(item:HumanBagSlot())
-        ImGui.TableNextColumn()
-        if item:CanPickUp() then
-          local clickedPickupItem = ImGui.SmallButton("Pickup##"..k..character)
-          if clickedPickupItem then
-            pickupItem(character, item)
-          end
-        end
       end
     end
 

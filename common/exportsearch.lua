@@ -122,7 +122,7 @@ local function searchFile(searchTerms, exportFile)
 end
 
 ---@param searchTerms string
----@return table<string, { online: bool, searchResult: SearchItem }>
+---@return table<string, { online: boolean, searchResult: SearchItem }>
 local function search(searchTerms)
   logger.Debug('Starting search in export files for offline characters')
   local clients = fetchOnlineClients()
