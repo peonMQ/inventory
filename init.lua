@@ -26,14 +26,10 @@ require 'ImGui'
 -- Constants
 local ICON_WIDTH = 20
 local ICON_HEIGHT = 20
-local COUNT_X_OFFSET = 39
-local COUNT_Y_OFFSET = 23
 local EQ_ICON_OFFSET = 500
-local INVENTORY_DELAY_SECONDS = 0
 
 -- EQ Texture Animation references
 local animItems = mq.FindTextureAnimation("A_DragItem")
-local animBox = mq.FindTextureAnimation("A_RecessedBox")
 
 ---@type table<string, { online: boolean, searchResult: SearchItem }>
 local searchResult = {}
@@ -53,6 +49,7 @@ end
 ---@param item SearchItem
 local function pickupItem(character, item)
   if item.InventorySlot >= 2000 then
+    logger.Warn("Cannot pick up item from a bankslot.")
     return
   end
 
@@ -64,6 +61,24 @@ local function pickupItem(character, item)
     command = string.format('/nomodkey /itemnotify pack%d leftmouseup', packslot)
   end
 
+  if character == mq.TLO.Me.Name() then
+    mq.cmd(command)
+  elseif broadcaster then
+    broadcaster.ExecuteCommand(command, {character})
+  else
+    logger.Warn("Dannet or EQBC is required to do remote item pickups")
+  end
+end
+
+---@param character string
+---@param item SearchItem
+local function useitem(character, item)
+  if item.InventorySlot >= 2000 then
+    logger.Warn("Cannot use item from a bankslot.")
+    return
+  end
+
+  local command = string.format('/useitem "%s"', item.Name)
   if character == mq.TLO.Me.Name() then
     mq.cmd(command)
   elseif broadcaster then
@@ -126,8 +141,9 @@ local function draw_item_icon(character, online, item)
     pickupItem(character, item)
   end
 
-  -- Right-click mouse works on bag items like in-game action
-  -- if ImGui.IsItemClicked(ImGuiMouseButton.Right) then mq.cmdf('/useitem "%s"', item.Name) end
+  if ImGui.IsItemClicked(ImGuiMouseButton.Right) and online then
+    useitem(character, item)
+  end
 end
 
 -- ImGui main function for rendering the UI window
