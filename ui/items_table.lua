@@ -2,7 +2,7 @@
 require 'ImGui'
 
 local useitem = require('actions/useitem')
-local pickupItem = require('actions/pickupItem')
+local pickupItem = require('actions/pickup_item')
 
 -- EQ Texture Animation references
 local animItems = mq.FindTextureAnimation("A_DragItem")

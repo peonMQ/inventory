@@ -16,7 +16,7 @@ local logger = require('utils/logging')
 local searchItem = require('common/searchitem')
 local search = require('actions/search')
 local export = require('actions/export')
-local renderTable = require('ui/itemstable')
+local renderTable = require('ui/items_table')
 
 ---@type table<string, { online: boolean, searchResult: SearchItem }>
 local searchResult = {}
