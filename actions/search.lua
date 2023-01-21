@@ -5,7 +5,7 @@ local luaUtils = require('utils/lua-paths')
 local doAction = require('actions/action')
 
 ---@type RunningDir
-local runningDir = luaUtils.RunningDir:new()
+local runningDir = luaUtils.RunningDir:Parent()
 
 local exportSearch = require('common/exportsearch')
 
@@ -18,9 +18,8 @@ local function search(searchterms, includeOffline)
     searchResult = exportSearch(searchterms)
   end
 
-  local command = string.format('/lua run %s %s "%s"', "inventory/search",  mq.TLO.Me.Name(), searchterms)
+  local command = string.format('/lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("search"),  mq.TLO.Me.Name(), searchterms)
   doAction(command)
-
   return searchResult
 end
 

@@ -3,10 +3,10 @@ local luaUtils = require('utils/lua-paths')
 local doAction = require('actions/action')
 
 ---@type RunningDir
-local runningDir = luaUtils.RunningDir:new()
+local runningDir = luaUtils.RunningDir:Parent()
 
 local function search()
-  local command = string.format('/lua run "%s"', "inventory/export")
+  local command = string.format('/lua run "%s"', runningDir:GetRelativeToMQLuaPath("export"))
   doAction(command)
 end
 
