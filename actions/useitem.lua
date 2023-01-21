@@ -1,7 +1,7 @@
 --- @type Mq
 local mq = require 'mq'
 local logger = require('utils/logging')
-local doAction = require('actions/doAction')
+local doAction = require('actions/action')
 
 ---@param character string
 ---@param item SearchItem

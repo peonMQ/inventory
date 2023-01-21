@@ -1,6 +1,9 @@
 --- @type ImGui
 require 'ImGui'
 
+--- @type Mq
+local mq = require 'mq'
+
 local useitem = require('actions/useitem')
 local pickupItem = require('actions/pickup_item')
 
@@ -19,7 +22,7 @@ local ColumnID_Amount = 3
 local ColumnID_InventorySlot = 4
 local ColumnID_BagSlot = 5
 
-local tableFlags = bit32.bor(ImGuiTableFlags.PadOuterX, ImGuiTableFlags.Hideable, ImGuiTableFlags.Sortable, ImGuiTableFlags.ContextMenuInBody, ImGuiTableFlags.Reorderable)
+local tableFlags = bit32.bor(ImGuiTableFlags.PadOuterX, ImGuiTableFlags.Hideable, ImGuiTableFlags.Sortable)
 
 
 ---Draws the individual item icon in the bag.
