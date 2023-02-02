@@ -216,8 +216,13 @@ local itemsearch = function()
           draw_item_icon(character, result.online, item)
         ImGui.TableNextColumn()
         ImGui.Text(item.Name)
-        if ImGui.IsItemClicked(ImGuiMouseButton.Left) and item.ItemLink ~= "" then
-          mq.cmdf("/say %s", item.ItemLink)
+        if ImGui.IsItemClicked(ImGuiMouseButton.Left) then
+          if character == mq.TLO.Me.Name() then
+            item:Inspect()
+          elseif broadcaster then
+            local command = string.format('/lua run "%s" %s', runningDir:GetRelativeToMQLuaPath("linkitem"), item.Id)
+            broadcaster.ExecuteCommand(command, {character})
+          end
         end
         ImGui.TableNextColumn()
         ImGui.Text(item.Amount)
