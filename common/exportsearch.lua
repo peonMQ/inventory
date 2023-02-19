@@ -1,4 +1,3 @@
---- @type Mq
 local mq = require 'mq'
 local packageMan = require('mq/PackageMan')
 local logger = require 'utils/logging'

@@ -1,4 +1,4 @@
---- @type Mq
+
 local mq = require('mq')
 
 local function findItemLink(id)
@@ -35,7 +35,7 @@ local SearchItem = {Id = 0, Name = "", Icon = 0, Amount = 0, InventorySlot = 0, 
 ---@param inventorySlot number
 ---@param bagSlot number
 ---@return SearchItem
-function SearchItem:new (id, name, amount, inventorySlot, bagSlot)
+function SearchItem:new (id, name, amount, inventorySlot, bagSlot, icon)
   self.__index = self
   local o = setmetatable({}, self)
   o.Id = id or error("Id required.")
@@ -44,7 +44,7 @@ function SearchItem:new (id, name, amount, inventorySlot, bagSlot)
   o.InventorySlot = inventorySlot or error("InventorySlot is required.")
   o.BagSlot = bagSlot or -1
   o.ItemLink = findItemLink(id) or ""
-  o.Icon = findItemIcon(id) or 0
+  o.Icon = findItemIcon(id) or icon or 0
   return o
 end
 
@@ -123,7 +123,7 @@ end
 
 ---@return string
 function SearchItem:ToReportString ()
-  return string.format("<%s;%s;%s;%s;%s>", self.Id, self.Name, self.Amount, self.InventorySlot, self.BagSlot)
+  return string.format("<%s;%s;%s;%s;%s;%s>", self.Id, self.Name, self.Amount, self.InventorySlot, self.BagSlot, self.Icon)
 end
 
 ---@param searchTerms string
