@@ -1,11 +1,11 @@
 --- @type Mq
 local mq = require 'mq'
-local packageMan = require('mq/PackageMan')
+local packageMan = require 'mq/PackageMan'
 local logger = require 'utils/logging'
 local plugin = require 'utils/plugins'
 local debugUtils = require 'utils/debug'
 --- @type SearchItem
-local searchItem = require('common/searchitem')
+local searchItem = require 'common/searchitem'
 
 local lfs = packageMan.Require('luafilesystem', 'lfs')
 

@@ -1,15 +1,15 @@
 --- @type Mq
 local mq = require 'mq'
 
-local packageMan = require('mq/PackageMan')
+local packageMan = require 'mq/PackageMan'
 packageMan.Require('luafilesystem', 'lfs')
 packageMan.Require('lua-cjson', 'cjson')
 packageMan.Require('lyaml')
 packageMan.Require('lsqlite3')
 
-local logger = require('utils/logging')
-local luaUtils = require('utils/lua-paths')
-local broadCastInterfaceFactory = require('broadcast/broadcastinterface')
+local logger = require 'utils/logging'
+local luaUtils = require 'utils/lua-paths'
+local broadCastInterfaceFactory = require 'broadcast/broadcastinterface'
 
 local broadcaster = broadCastInterfaceFactory()
 
@@ -18,8 +18,8 @@ local runningDir = luaUtils.RunningDir:new()
 runningDir:AppendToPackagePath()
 
 --- @type SearchItem
-local searchItem = require('common/searchitem')
-local exportSearch = require('common/exportsearch')
+local searchItem = require 'common/searchitem'
+local exportSearch = require 'common/exportsearch'
 --- @type ImGui
 require 'ImGui'
 

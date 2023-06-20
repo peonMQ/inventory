@@ -1,5 +1,5 @@
 --- @type Mq
-local mq = require('mq')
+local mq = require 'mq'
 
 local function findItem(id)
   local item = mq.TLO.FindItem(id)

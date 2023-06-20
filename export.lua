@@ -1,11 +1,11 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local luautils = require('utils/loaders/lua-table')
-local broadcast = require('broadcast/broadcast')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local luautils = require 'utils/loaders/lua-table'
+local broadcast = require 'broadcast/broadcast'
 
 --- @type SearchItem
-local searchItem = require('common/searchitem')
+local searchItem = require 'common/searchitem'
 
 local next = next
 local maxInventorySlots = 32

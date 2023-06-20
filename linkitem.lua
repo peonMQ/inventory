@@ -1,7 +1,7 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local luautils = require('utils/lua-table')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local luautils = require 'utils/lua-table'
 
 local args = {...}
 
