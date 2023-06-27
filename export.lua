@@ -2,6 +2,7 @@
 local mq = require 'mq'
 local logger = require 'utils/logging'
 local luautils = require 'utils/loaders/lua-table'
+local debug = require 'utils/debug'
 local broadcast = require 'broadcast/broadcast'
 
 --- @type SearchItem
@@ -58,8 +59,10 @@ local function exportInventory()
     end
   end
 
-  if not next(export.bank) or not next(export.inventory)  then
+  if not next(export.bank) and not next(export.inventory)  then
+    -- debug.PrintTable(export)
     logger.Info("No items to export.")
+    broadcast.Error("No items to export.")
     return
   end
 
