@@ -1,15 +1,10 @@
 --- @type Mq
-local mq = require 'mq'
+local mq = require('mq')
 
-local function findItem(id)
+local function findItemLink(id)
   local item = mq.TLO.FindItem(id)
   if item() ~= nil then
-      return item
-  end
-
-  item = mq.TLO.FindItemBank(id)
-  if item() ~= nil then
-      return item
+      return item.ItemLink("CLICKABLE")()
   end
 
   return nil
@@ -36,7 +31,8 @@ end
 ---@field public Amount number
 ---@field public InventorySlot number
 ---@field public BagSlot number
-local SearchItem = {Id = 0, Name = "", Icon = 0, Amount = 0, InventorySlot = 0, BagSlot = -1}
+---@field public ItemLink string
+local SearchItem = {Id = 0, Name = "", Icon = 0, Amount = 0, InventorySlot = 0, BagSlot = -1, ItemLink= ""}
 
 ---@param id number
 ---@param name string
@@ -128,22 +124,6 @@ function SearchItem:HumanBagSlot ()
   end
 
   return ""
-end
-
-function SearchItem:ItemLink()
-  local item = findItem(self.Id)
-  if item then
-    return item.ItemLink("CLICKABLE")()
-  end
-
-  return ""
-end
-
-function SearchItem:Inspect()
-  local item = findItem(self.Id)
-  if item then
-    item.Inspect()
-  end
 end
 
 ---@return string
