@@ -16,6 +16,7 @@ local logger = require('utils/logging')
 local searchItem = require('common/searchitem')
 local search = require('actions/search')
 local export = require('actions/export')
+local renderOptions = require('ui/search-options')
 local renderTable = require('ui/items_table')
 
 ---@type table<string, { online: boolean, searchResult: SearchItem }>
@@ -32,9 +33,9 @@ local function toInteger(value)
   return asNumber --[[@as integer]]
 end
 
-local function itemSearchReportEvent(line, sender, id, name, amount, inventorySlot, bagSlot)
+local function itemSearchReportEvent(line, sender, id, name, amount, inventorySlot, bagSlot, icon)
   sender = string.gsub(" "..sender, "%W%l", string.upper):sub(2)
-  local searchedItem = searchItem:new(toInteger(id), name, toInteger(amount), toInteger(inventorySlot), toInteger(bagSlot))
+  local searchedItem = searchItem:new(toInteger(id), name, toInteger(amount), toInteger(inventorySlot), toInteger(bagSlot), toInteger(icon))
   local toonResult = searchResult[sender] or { online = true, searchResult = {} }
   table.insert(toonResult.searchResult, searchedItem)
   if not searchResult[sender] then
@@ -43,9 +44,9 @@ local function itemSearchReportEvent(line, sender, id, name, amount, inventorySl
 end
 
 local serverName = mq.TLO.MacroQuest.Server()
-mq.event("itemsearchreportdannet", string.format('[ %s_#1# ] <#2#;#3#;#4#;#5#;#6#>', serverName), itemSearchReportEvent)
-mq.event("itemsearchreportdannetself", string.format('[ -->(%s_#1#) ] <#2#;#3#;#4#;#5#;#6#>', serverName), itemSearchReportEvent)
-mq.event("itemsearchreporteqbc", '[#1#(msg)] <#2#;#3#;#4#;#5#;#6#>', itemSearchReportEvent)
+mq.event("itemsearchreportdannet", string.format('[ %s_#1# ] <#2#;#3#;#4#;#5#;#6#;#7#>', serverName), itemSearchReportEvent)
+mq.event("itemsearchreportdannetself", string.format('[ -->(%s_#1#) ] <#2#;#3#;#4#;#5#;#6#;#7#>', serverName), itemSearchReportEvent)
+mq.event("itemsearchreporteqbc", '[#1#(msg)] <#2#;#3#;#4#;#5#;#6#;#7#>', itemSearchReportEvent)
 
 -- GUI Control variables
 local openGUI = true
@@ -55,36 +56,35 @@ local searchterms = ""
 local searchOffline = false
 local EnterKeyId = 13
 
+local leftPanelDefaultWidth = 200
+local leftPanelWidth = 200
+
+
+
+local function LeftPaneWindow()
+  local x,y = ImGui.GetContentRegionAvail()
+  if ImGui.BeginChild("left", leftPanelWidth, y-1, true) then
+    searchResult = renderOptions(searchResult)
+  end
+  ImGui.EndChild()
+end
+
+local function RightPaneWindow()
+  local x,y = ImGui.GetContentRegionAvail()
+  if ImGui.BeginChild("right", x, y-1, true) then
+    renderTable(searchResult)
+  end
+  ImGui.EndChild()
+end
+
 -- ImGui main function for rendering the UI window
 local itemsearch = function()
   openGUI, shouldDrawGUI = ImGui.Begin('Item Search', openGUI)
   ImGui.SetWindowSize(430, 277, ImGuiCond.FirstUseEver)
   if shouldDrawGUI then
-    ImGui.PushItemWidth(288)
-    searchterms, _ = ImGui.InputTextWithHint("##searchterms", "search terms", searchterms)
-    local isSearchFocused = ImGui.IsItemFocused()
-    ImGui.PopItemWidth()
-
-    ImGui.SameLine(300)
-    if ImGui.Button("Search", 50, 22) or (isSearchFocused and ImGui.IsKeyPressed(EnterKeyId)) then
-      searchResult = search(searchterms, searchOffline)
-    end
-
-    ImGui.SameLine(355)
-    if ImGui.Button("Clear", 42, 22) then
-      searchResult = {}
-      searchterms = ""
-    end
-
-    ImGui.SameLine(401)
-    if ImGui.Button("Export", 50, 22) then
-      export()
-    end
-
-    ImGui.SameLine(461)
-    searchOffline, _ = ImGui.Checkbox('Incl. Offline', searchOffline)
-
-    renderTable(searchResult)
+    LeftPaneWindow()
+    ImGui.SameLine()
+    RightPaneWindow()
   end
 
   ImGui.End()
