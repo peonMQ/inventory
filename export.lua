@@ -1,12 +1,12 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local luautils = require('utils/loaders/lua-table')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local luautils = require 'utils/loaders/lua-table'
 local debug = require 'utils/debug'
-local broadcast = require('broadcast/broadcast')
+local broadcast = require 'broadcast/broadcast'
 
 --- @type SearchItem
-local searchItem = require('common/searchitem')
+local searchItem = require 'common/searchitem'
 
 local next = next
 local maxInventorySlots = 32
@@ -60,6 +60,7 @@ local function exportInventory()
   end
 
   if not next(export.bank) and not next(export.inventory)  then
+    -- debug.PrintTable(export)
     logger.Info("No items to export.")
     broadcast.Error("No items to export.")
     return

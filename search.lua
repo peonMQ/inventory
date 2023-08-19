@@ -6,7 +6,7 @@ local broadcast = require('broadcast/broadcast')
 local broadCastInterface = require('broadcast/broadcastinterface')()
 
 --- @type SearchItem
-local searchItem = require('common/searchitem')
+local searchItem = require 'common/searchitem'
 
 local next = next
 local args = {...}
