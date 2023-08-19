@@ -1,15 +1,10 @@
 --- @type Mq
-local mq = require 'mq'
+local mq = require('mq')
 
-local function findItem(id)
+local function findItemLink(id)
   local item = mq.TLO.FindItem(id)
   if item() ~= nil then
-      return item
-  end
-
-  item = mq.TLO.FindItemBank(id)
-  if item() ~= nil then
-      return item
+      return item.ItemLink("CLICKABLE")()
   end
 
   return nil
@@ -36,7 +31,8 @@ end
 ---@field public Amount number
 ---@field public InventorySlot number
 ---@field public BagSlot number
-local SearchItem = {Id = 0, Name = "", Icon = 0, Amount = 0, InventorySlot = 0, BagSlot = -1}
+---@field public ItemLink string
+local SearchItem = {Id = 0, Name = "", Icon = 0, Amount = 0, InventorySlot = 0, BagSlot = -1, ItemLink= ""}
 
 ---@param id number
 ---@param name string
@@ -44,7 +40,7 @@ local SearchItem = {Id = 0, Name = "", Icon = 0, Amount = 0, InventorySlot = 0, 
 ---@param inventorySlot number
 ---@param bagSlot number
 ---@return SearchItem
-function SearchItem:new (id, name, amount, inventorySlot, bagSlot)
+function SearchItem:new (id, name, amount, inventorySlot, bagSlot, icon)
   self.__index = self
   local o = setmetatable({}, self)
   o.Id = id or error("Id required.")
@@ -52,7 +48,8 @@ function SearchItem:new (id, name, amount, inventorySlot, bagSlot)
   o.Amount = amount or error("Amount is required.")
   o.InventorySlot = inventorySlot or error("InventorySlot is required.")
   o.BagSlot = bagSlot or -1
-  o.Icon = findItemIcon(id) or 0
+  o.ItemLink = findItemLink(id) or ""
+  o.Icon = findItemIcon(id) or icon or 0
   return o
 end
 
@@ -129,25 +126,9 @@ function SearchItem:HumanBagSlot ()
   return ""
 end
 
-function SearchItem:ItemLink()
-  local item = findItem(self.Id)
-  if item then
-    return item.ItemLink("CLICKABLE")()
-  end
-
-  return ""
-end
-
-function SearchItem:Inspect()
-  local item = findItem(self.Id)
-  if item then
-    item.Inspect()
-  end
-end
-
 ---@return string
 function SearchItem:ToReportString ()
-  return string.format("%s;%s;%s;%s;%s", self.Id, self.Name, self.Amount, self.InventorySlot, self.BagSlot)
+  return string.format("<%s;%s;%s;%s;%s;%s>", self.Id, self.Name, self.Amount, self.InventorySlot, self.BagSlot, self.Icon)
 end
 
 ---@param searchTerms string

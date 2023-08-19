@@ -1,8 +1,9 @@
 --- @type Mq
-local mq = require 'mq'
-local logger = require 'utils/logging'
-local luautils = require 'utils/lua-table'
-local broadcast = require 'broadcast/broadcast'
+local mq = require('mq')
+local logger = require('utils/logging')
+local luautils = require('utils/lua-table')
+local broadcast = require('broadcast/broadcast')
+local broadCastInterface = require('broadcast/broadcastinterface')()
 
 --- @type SearchItem
 local searchItem = require 'common/searchitem'
@@ -146,17 +147,18 @@ local function findAndReportItems(reportToo, searchTerms)
     logger.Info("Done, nothing found for <%s>", searchTerms)
   else
     for _,searchitem in ipairs(searchResults) do
-      if mq.TLO.Plugin("mq2dannet").IsLoaded() then
-        mq.cmdf('/dt %s <%s>', reportToo, searchitem:ToReportString())
-      elseif mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
-        mq.cmdf('/bct %s <%s>', reportToo, searchitem:ToReportString())
+      if broadCastInterface then
+        broadCastInterface.Broadcast(searchitem:ToReportString(), {reportToo})
       else
         logger.Warn("Dannet or EQBC is required to do online searches")
       end
     end
 
-    logger.Info("Completed search for <%s>", searchTerms)
-    broadcast.Success("Completed search for <%s>", searchTerms)
+    if broadCastInterface then
+      broadcast.Success("Completed search for <%s>", searchTerms)
+    else
+      logger.Info("Completed search for <%s>", searchTerms)
+    end
   end
 end
 
