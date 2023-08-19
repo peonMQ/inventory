@@ -1,4 +1,4 @@
-
+--- @type Mq
 local mq = require('mq')
 
 local function findItemLink(id)

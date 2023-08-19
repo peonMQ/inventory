@@ -1,3 +1,4 @@
+--- @type Mq
 local mq = require 'mq'
 local logger = require('utils/logging')
 local luaUtils = require('utils/lua-paths')
