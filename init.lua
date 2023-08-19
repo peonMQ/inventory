@@ -4,20 +4,20 @@ require 'ImGui'
 --- @type Mq
 local mq = require 'mq'
 
-local packageMan = require('mq/PackageMan')
+local packageMan = require 'mq/PackageMan'
 packageMan.Require('luafilesystem', 'lfs')
 packageMan.Require('lua-cjson', 'cjson')
 packageMan.Require('lyaml')
 packageMan.Require('lsqlite3')
 
-local logger = require('utils/logging')
+local logger = require 'utils/logging'
 
 --- @type SearchItem
-local searchItem = require('common/searchitem')
-local search = require('actions/search')
-local export = require('actions/export')
-local renderOptions = require('ui/search-options')
-local renderTable = require('ui/items_table')
+local searchItem = require 'common/searchitem'
+local search = require 'actions/search'
+local export = require 'actions/export'
+local renderOptions = require 'ui/search-options'
+local renderTable = require 'ui/items_table'
 
 ---@type table<string, { online: boolean, searchResult: SearchItem }>
 local searchResult = {}
