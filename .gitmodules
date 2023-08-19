@@ -1,7 +1,3 @@
-[submodule "definitions/mq"]
-	path = definitions/mq
-	url = https://github.com/projecteon/mq-definitions.git
-	branch = master
 [submodule "utils"]
 	path = utils
 	url = https://github.com/peonMQ/utils.git
