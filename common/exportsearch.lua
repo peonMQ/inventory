@@ -103,16 +103,16 @@ local function fetchOnlineClients()
   return clients
 end
 
----@param searchTerms string
+---@param searchParams SearchParams
 ---@param exportFile string
 ---@return string, SearchItem
-local function searchFile(searchTerms, exportFile)
+local function searchFile(searchParams, exportFile)
   local _, _, characterName = string.find(exportFile, "(%a+).lua")
   logger.Debug('Starting search for character \a-y[%s]\ax', characterName)
   local exportItems = mapExport(loadExportInventory(exportFile))
   local toonFoundItems = {}
   for _, item in pairs(exportItems) do
-    if item:MatchesSearchTerms(searchTerms) then
+    if item:MatchesSearchTerms(searchParams) then
       logger.Debug('Matched item [] for character []', item.Name, characterName)
       table.insert(toonFoundItems, item)
     end
@@ -121,15 +121,15 @@ local function searchFile(searchTerms, exportFile)
   return characterName, toonFoundItems
 end
 
----@param searchTerms string
+---@param searchParams SearchParams
 ---@return table<string, { online: boolean, searchResult: SearchItem }>
-local function search(searchTerms)
+local function search(searchParams)
   logger.Debug('Starting search in export files for offline characters')
   local clients = fetchOnlineClients()
   local exportFiles = getExportFiles(exportDir, clients)
   local foundItems = {}
   for _,exportFile in ipairs(exportFiles) do
-    local characterName, toonFoundItems = searchFile(searchTerms, exportFile)
+    local characterName, toonFoundItems = searchFile(searchParams, exportFile)
     if next(toonFoundItems) then
       foundItems[characterName] = { online = false, searchResult = toonFoundItems }
     end

@@ -5,8 +5,8 @@ local luautils = require('utils/lua-table')
 local broadcast = require('broadcast/broadcast')
 local broadCastInterface = require('broadcast/broadcastinterface')()
 
---- @type SearchItem
 local searchItem = require 'common/searchitem'
+local searchParams = require 'common/searchparams'
 
 local next = next
 local args = {...}
@@ -21,24 +21,12 @@ local function convert(item, prefixNum)
 end
 
 ---@param item item
----@param searchTerms string
----@return boolean
-local function matchesSearchTerms(item, searchTerms)
-  local text = item.Name():lower()
-  for searchTerm in string.gmatch(searchTerms:lower(), "%S+") do
-    if not text:find(searchTerm) then
-      return false
-    end
-  end
-
-  return true
-end
-
----@param item item
+---@param searchParams SearchParams
+---@param isBank boolean?
 ---@param prefixNum? number
 ---@return boolean, SearchItem|nil
-local function matchItem(item, searchTerms, prefixNum)
-  if item() and matchesSearchTerms(item, searchTerms) then
+local function matchItem(item, searchParams, isBank, prefixNum)
+  if item() and searchParams:Matches(item, isBank) then
     return true, convert(item, prefixNum)
   end
 
@@ -46,15 +34,16 @@ local function matchItem(item, searchTerms, prefixNum)
 end
 
 ---@param container item
----@param searchTerms string
+---@param searchParams SearchParams
+---@param isBank boolean?
 ---@param prefixNum? number
 ---@return SearchItem[]
-local function findItemInContainer(container, searchTerms, prefixNum)
+local function findItemInContainer(container, searchParams, isBank, prefixNum)
   logger.Debug("findItemInContainer <%s> <%s>", container.Name(), container.Container())
   local searchResult = {}
   for i=1,container.Container() do
     local item = container.Item(i)
-    local success, matchedItem = matchItem(item, searchTerms, prefixNum)
+    local success, matchedItem = matchItem(item, searchParams, isBank, prefixNum)
     if success then
       searchResult[#searchResult+1] = matchedItem
     end
@@ -63,21 +52,21 @@ local function findItemInContainer(container, searchTerms, prefixNum)
   return searchResult
 end
 
----@param searchTerms string
+---@param searchParams SearchParams
 ---@return SearchItem[]
-local function findItemInInventory(searchTerms)
-  logger.Debug("Seaching inventory for [%s]", searchTerms)
+local function findItemInInventory(searchParams)
+  logger.Debug("Seaching inventory for [%s]", searchParams:ToSearchString())
   local searchResult = {}
   local inventory = mq.TLO.Me.Inventory
   for i=1, maxInventorySlots do
     local item = inventory(i) --[[@as item]]
-    local success, matchedItem = matchItem(item, searchTerms)
+    local success, matchedItem = matchItem(item, searchParams)
     if success then
       searchResult[#searchResult+1] = matchedItem
     end
 
     if item.Container() and item.Container() > 0 then
-      local containerSearchResult = findItemInContainer(item, searchTerms)
+      local containerSearchResult = findItemInContainer(item, searchParams)
       luautils.TableConcat(searchResult, containerSearchResult)
     end
   end
@@ -85,21 +74,21 @@ local function findItemInInventory(searchTerms)
   return searchResult
 end
 
----@param searchTerms string
+---@param searchParams SearchParams
 ---@return SearchItem[]
-local function findItemInBank(searchTerms)
-  logger.Debug("Seaching bank for [%s]", searchTerms)
+local function findItemInBank(searchParams)
+  logger.Debug("Seaching bank for [%s]", searchParams:ToSearchString())
   local searchResult = {}
   local bank = mq.TLO.Me.Bank
   for i=1, maxBankSlots do
     local item = bank(i) --[[@as item]]
-    local success, matchedItem = matchItem(item, searchTerms, 2000)
+    local success, matchedItem = matchItem(item, searchParams, true, 2000)
     if success then
       searchResult[#searchResult+1] = matchedItem
     end
 
     if item.Container() and item.Container() > 0 then
-      local containerSearchResult = findItemInContainer(item, searchTerms, 2000)
+      local containerSearchResult = findItemInContainer(item, searchParams, true, 2000)
       luautils.TableConcat(searchResult, containerSearchResult)
     end
   end
@@ -107,44 +96,41 @@ local function findItemInBank(searchTerms)
   return searchResult
 end
 
-local function findItems(searchTerms)
+---@param searchParams SearchParams
+---@return table<SearchItem>
+local function findItems(searchParams)
   local searchResults = {}
-  logger.Info("Starting search for <"..searchTerms..">")
+  logger.Info("Starting search for <"..searchParams:ToSearchString()..">")
 
   -- Search inventory
-  local inventorySearchResult = findItemInInventory(searchTerms:lower())
+  local inventorySearchResult = findItemInInventory(searchParams)
   luautils.TableConcat(searchResults, inventorySearchResult)
 
   -- Search bank
-  local bankSearchResult = findItemInBank(searchTerms:lower())
+  local bankSearchResult = findItemInBank(searchParams)
   luautils.TableConcat(searchResults, bankSearchResult)
 
   return searchResults
 end
 
-local minSearchTextLength = 3
 ---@param reportToo string
----@param searchTerms string
-local function findAndReportItems(reportToo, searchTerms)
+---@param params string
+local function findAndReportItems(reportToo, params)
   if not reportToo then
     logger.Warn("<reportToo> is <nil>")
     return
   end
 
-  if not searchTerms then
-    logger.Warn("Searchtext is <nil>")
+  if not params then
+    logger.Warn("Search Params is <nil>")
     return
   end
 
-  if #searchTerms < minSearchTextLength then
-    logger.Warn("Searchtext is to short <%d>, must me minimum %d characters.", #searchTerms, minSearchTextLength)
-    return
-  end
-
-  local searchResults = findItems(searchTerms)
+  local searchParahms = searchParams:parse(params)
+  local searchResults = findItems(searchParahms)
 
   if not next(searchResults) then
-    logger.Info("Done, nothing found for <%s>", searchTerms)
+    logger.Info("Done, nothing found for <%s>", params)
   else
     for _,searchitem in ipairs(searchResults) do
       if broadCastInterface then
@@ -155,9 +141,9 @@ local function findAndReportItems(reportToo, searchTerms)
     end
 
     if broadCastInterface then
-      broadcast.Success("Completed search for <%s>", searchTerms)
+      broadcast.Success("Completed search for <%s>", params)
     else
-      logger.Info("Completed search for <%s>", searchTerms)
+      logger.Info("Completed search for <%s>", params)
     end
   end
 end
