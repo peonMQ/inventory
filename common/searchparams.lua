@@ -94,10 +94,7 @@ function SearchParams:new(terms, slotFilter, typeFilter, classFilter, locationFi
   return o
 end
 
-
 function SearchParams:Matches(item, isBank)
-  logger.Debug("Attempting match for %s", item.Name())
-
   if not matchesSearchTerms(item, self.Terms) then
     logger.Debug("Did not match terms for %s", item.Name())
     return false
@@ -114,7 +111,7 @@ function SearchParams:Matches(item, isBank)
   end
 
   if not matchesClassFilter(item, self.ClassFilter) then
-    logger.Error("Did not match classfilter for %s for filter <%s>", item.Name(), self.ClassFilter)
+    logger.Debug("Did not match classfilter for %s for filter <%s>", item.Name(), self.ClassFilter)
     return false
   end
 

@@ -112,7 +112,7 @@ local function searchFile(searchParams, exportFile)
   local exportItems = mapExport(loadExportInventory(exportFile))
   local toonFoundItems = {}
   for _, item in pairs(exportItems) do
-    if item:MatchesSearchTerms(searchParams.Terms) then
+    if item:MatchesSearchTerms(searchParams) then
       logger.Debug('Matched item [] for character []', item.Name, characterName)
       table.insert(toonFoundItems, item)
     end

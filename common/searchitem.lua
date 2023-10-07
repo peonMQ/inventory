@@ -1,5 +1,6 @@
 --- @type Mq
 local mq = require('mq')
+local logger = require 'utils/logging'
 
 local function findItemLink(id)
   local item = mq.TLO.FindItem(id)
@@ -22,6 +23,34 @@ local function findItemIcon(id)
   end
 
   return nil
+end
+
+---@param item SearchItem
+---@param searchTerms string
+---@return boolean
+local function matchesSearchTerms(item, searchTerms)
+  local text = item.Name():lower()
+  for searchTerm in string.gmatch(searchTerms:lower(), "%S+") do
+    if not text:find(searchTerm) then
+      return false
+    end
+  end
+
+  return true
+end
+
+---@param item SearchItem
+---@param filter string
+---@return boolean
+local function matchesLocationFilter(item, filter)
+  if filter == "any" then
+    return true
+  end
+
+  local isBank = item.InventorySlot >= 2000
+  return (filter == 'inventory' and not (isBank))
+          or (filter == 'bank' and (isBank))
+          or (filter == 'equiped' and item.InventorySlot() < 23)
 end
 
 ---@class SearchItem
@@ -131,14 +160,17 @@ function SearchItem:ToReportString ()
   return string.format("<%s;%s;%s;%s;%s;%s>", self.Id, self.Name, self.Amount, self.InventorySlot, self.BagSlot, self.Icon)
 end
 
----@param searchTerms string
+---@param searchParams SearchParams
 ---@return boolean
-function SearchItem:MatchesSearchTerms(searchTerms)
-  local text = self.Name:lower()
-  for searchTerm in string.gmatch(searchTerms:lower(), "%S+") do
-    if not text:find(searchTerm) then
-      return false
-    end
+function SearchItem:MatchesSearchTerms(searchParams)
+  if not matchesSearchTerms(self, searchParams.Terms) then
+    logger.Debug("Did not match terms for %s", self.Name)
+    return false
+  end
+
+  if not matchesLocationFilter(self, searchParams.LocationFilter) then
+    logger.Debug("Did not match locationfilter for %sfor filter <%s>", self.Name, searchParams.LocationFilter)
+    return false
   end
 
   return true
