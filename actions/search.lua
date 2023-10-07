@@ -9,16 +9,16 @@ local runningDir = luaUtils.RunningDir:Parent()
 
 local exportSearch = require('common/exportsearch')
 
----@param searchterms string
+---@param searchParams SearchParams
 ---@param includeOffline boolean
 ---@return table<string, { online: boolean, searchResult: SearchItem }>
-local function search(searchterms, includeOffline)
+local function search(searchParams, includeOffline)
   local searchResult = {}
   if includeOffline then
-    searchResult = exportSearch(searchterms)
+    searchResult = exportSearch(searchParams)
   end
 
-  local command = string.format('/lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("search"),  mq.TLO.Me.Name(), searchterms)
+  local command = string.format('/lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("search"),  mq.TLO.Me.Name(), searchParams:ToSearchString())
   doAction(command)
   return searchResult
 end
