@@ -18,7 +18,7 @@ local function search(searchParams, includeOffline)
     searchResult = exportSearch(searchParams)
   end
 
-  local command = string.format('/lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("search"),  mq.TLO.Me.Name(), searchParams:ToSearchString())
+  local command = string.format('/lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("/search"),  mq.TLO.Me.Name(), searchParams:ToSearchString())
   doAction(command)
   return searchResult
 end
