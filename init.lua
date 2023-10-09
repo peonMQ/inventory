@@ -54,7 +54,7 @@ local shouldDrawGUI = true
 local terminate = false
 local searchterms = ""
 local searchOffline = false
-local EnterKeyId = 13
+local EnterKeyId = 13 -- https://github.com/gallexme/LuaPlugin-GTAV/blob/master/scripts/keys.lua
 
 local leftPanelDefaultWidth = 200
 local leftPanelWidth = 200
