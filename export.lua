@@ -1,11 +1,9 @@
---- @type Mq
 local mq = require 'mq'
 local logger = require 'utils/logging'
 local luautils = require 'utils/loaders/lua-table'
 local debug = require 'utils/debug'
 local broadcast = require 'broadcast/broadcast'
 
---- @type SearchItem
 local searchItem = require 'common/searchitem'
 
 local next = next
