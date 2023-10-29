@@ -1,8 +1,5 @@
---- @type ImGui
-require 'ImGui'
-
---- @type Mq
 local mq = require 'mq'
+local imgui = require 'ImGui'
 
 local logger = require 'utils/logging'
 local renderCombobox = require 'ui/combobox'
@@ -28,44 +25,44 @@ end
 
 ---@param searchResult table<string, { online: boolean, searchResult: SearchItem }>
 local function renderSearchOptions(searchResult)
-  local y = ImGui.GetCursorPosY()
-  ImGui.SetCursorPosY(y+5)
+  local y = imgui.GetCursorPosY()
+  imgui.SetCursorPosY(y+5)
 
-  if ImGui.Button("Clear") then
+  if imgui.Button("Clear") then
     searchResult = {}
     searchterms = ""
   end
 
-  ImGui.SameLine()
-  if ImGui.Button("Export") then
+  imgui.SameLine()
+  if imgui.Button("Export") then
     export()
   end
 
-  ImGui.SameLine()
-  if ImGui.Button("AutoInv.") then
+  imgui.SameLine()
+  if imgui.Button("AutoInv.") then
     autoinventory()
   end
 
-  y = ImGui.GetCursorPosY()
-  ImGui.SetCursorPosY(y+5)
-  ImGui.Separator()
+  y = imgui.GetCursorPosY()
+  imgui.SetCursorPosY(y+5)
+  imgui.Separator()
 
-  ImGui.Text('Search')
-  ImGui.PushItemWidth(200)
-  searchterms, _ = ImGui.InputText("##Search", searchterms)
-  local isSearchFocused = ImGui.IsItemFocused()
-  ImGui.PopItemWidth()
+  imgui.Text('Search')
+  imgui.PushItemWidth(200)
+  searchterms, _ = imgui.InputText("##Search", searchterms)
+  local isSearchFocused = imgui.IsItemFocused()
+  imgui.PopItemWidth()
 
   slotFilter = drawComboBoxFilter("Slot", slotFilter, filters.SlotFilter)
   typeFilter = drawComboBoxFilter("Type", typeFilter, filters.TypeFilter)
   locationFilter = drawComboBoxFilter("Location", locationFilter, filters.LocationFilter)
   classFilter = drawComboBoxFilter("Class", classFilter, filters.ClassFilter)
 
-  y = ImGui.GetCursorPosY()
-  ImGui.SetCursorPosY(y+5)
-  searchOffline, _ = ImGui.Checkbox('Incl. Offline', searchOffline)
+  y = imgui.GetCursorPosY()
+  imgui.SetCursorPosY(y+5)
+  searchOffline, _ = imgui.Checkbox('Incl. Offline', searchOffline)
 
-  if ImGui.Button("Search") or (isSearchFocused and ImGui.IsKeyPressed(EnterKeyId)) then
+  if imgui.Button("Search") or (isSearchFocused and imgui.IsKeyPressed(EnterKeyId)) then
     if #searchterms < minSearchTextLength then
       logger.Error("Searchtext is to short <%d>, must me minimum %d characters.", #searchterms, minSearchTextLength)
     else

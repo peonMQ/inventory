@@ -1,7 +1,4 @@
---- @type ImGui
-require 'ImGui'
-
---- @type Mq
+local imgui = require 'ImGui'
 local mq = require 'mq'
 
 local packageMan = require 'mq/PackageMan'
@@ -62,32 +59,32 @@ local leftPanelWidth = 200
 
 
 local function LeftPaneWindow()
-  local x,y = ImGui.GetContentRegionAvail()
-  if ImGui.BeginChild("left", leftPanelWidth, y-1, true) then
+  local x,y = imgui.GetContentRegionAvail()
+  if imgui.BeginChild("left", leftPanelWidth, y-1, true) then
     searchResult = renderOptions(searchResult)
   end
-  ImGui.EndChild()
+  imgui.EndChild()
 end
 
 local function RightPaneWindow()
-  local x,y = ImGui.GetContentRegionAvail()
-  if ImGui.BeginChild("right", x, y-1, true) then
+  local x,y = imgui.GetContentRegionAvail()
+  if imgui.BeginChild("right", x, y-1, true) then
     renderTable(searchResult)
   end
-  ImGui.EndChild()
+  imgui.EndChild()
 end
 
--- ImGui main function for rendering the UI window
+-- imgui main function for rendering the UI window
 local itemsearch = function()
-  openGUI, shouldDrawGUI = ImGui.Begin('Item Search', openGUI)
-  ImGui.SetWindowSize(430, 277, ImGuiCond.FirstUseEver)
+  openGUI, shouldDrawGUI = imgui.Begin('Item Search', openGUI)
+  imgui.SetWindowSize(430, 277, ImGuiCond.FirstUseEver)
   if shouldDrawGUI then
     LeftPaneWindow()
-    ImGui.SameLine()
+    imgui.SameLine()
     RightPaneWindow()
   end
 
-  ImGui.End()
+  imgui.End()
 
   if not openGUI then
       terminate = true
