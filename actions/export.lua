@@ -1,12 +1,11 @@
-local logger = require('knightlinc/Write')
-local luaUtils = require('utils/lua-paths')
+local runningDir = require('lib/runningdir')
 local remoteAction = require('actions/remoteAction')
 
 ---@type RunningDir
-local runningDir = luaUtils.RunningDir:Parent()
+local exportScriptPath = runningDir:Parent():GetRelativeToMQLuaPath("/export")
 
 local function search()
-  local command = string.format('/lua run "%s"', runningDir:GetRelativeToMQLuaPath("/export"))
+  local command = string.format('/lua run "%s"', exportScriptPath)
   remoteAction(command)
 end
 

@@ -3,7 +3,6 @@
     "files.exclude": {
         "definitions/": true,
         "broadcast/": true,
-        "utils/": true,
         "knightlinc/": true,
     },
     "workbench.colorCustomizations": {
@@ -23,7 +22,6 @@
         "./definitions/mq",
         "./definitions/imgui",
         "./broadcast/",
-        "./utils/",
         "./knightlinc"
     ],
 }

@@ -1,6 +1,5 @@
 local mq = require('mq')
 local logger = require('knightlinc/Write')
-local luautils = require('utils/lua-table')
 local broadcast = require('broadcast/broadcast')
 local broadCastInterface = require('broadcast/broadcastinterface')()
 
@@ -14,6 +13,16 @@ local next = next
 local args = {...}
 local maxInventorySlots = 22 + mq.TLO.Me.NumBagSlots()
 local maxBankSlots = mq.TLO.Inventory.Bank.BagSlots()
+
+---@param t1 table
+---@param t2 table
+---@return table
+local function tableConcat(t1,t2)
+  for i=1,#t2 do
+      t1[#t1+1] = t2[i]
+  end
+  return t1
+end
 
 ---@param item item
 ---@param prefixNum? number
@@ -69,7 +78,7 @@ local function findItemInInventory(searchParams)
 
     if item.Container() and item.Container() > 0 then
       local containerSearchResult = findItemInContainer(item, searchParams)
-      luautils.TableConcat(searchResult, containerSearchResult)
+      tableConcat(searchResult, containerSearchResult)
     end
   end
 
@@ -91,7 +100,7 @@ local function findItemInBank(searchParams)
 
     if item.Container() and item.Container() > 0 then
       local containerSearchResult = findItemInContainer(item, searchParams, true, 2000)
-      luautils.TableConcat(searchResult, containerSearchResult)
+      tableConcat(searchResult, containerSearchResult)
     end
   end
 
@@ -106,11 +115,11 @@ local function findItems(searchParams)
 
   -- Search inventory
   local inventorySearchResult = findItemInInventory(searchParams)
-  luautils.TableConcat(searchResults, inventorySearchResult)
+  tableConcat(searchResults, inventorySearchResult)
 
   -- Search bank
   local bankSearchResult = findItemInBank(searchParams)
-  luautils.TableConcat(searchResults, bankSearchResult)
+  tableConcat(searchResults, bankSearchResult)
 
   return searchResults
 end

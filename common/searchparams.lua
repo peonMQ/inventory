@@ -1,6 +1,20 @@
-
-local luaUtils = require 'utils/lua-table'
 local logger = require 'knightlinc/Write'
+
+
+---@param inputstr string
+---@param separator string
+---@return table
+local function split (inputstr, separator)
+  if separator == nil then
+     separator = "%s"
+  end
+
+  local subStrings={}
+  for subString in string.gmatch(inputstr, "([^"..separator.."]+)") do
+     table.insert(subStrings, subString)
+  end
+  return subStrings
+end
 
 ---@param item item
 ---@param searchTerms string
@@ -123,7 +137,7 @@ function SearchParams:Matches(item, isBank)
 end
 
 function SearchParams:parse(paramsString)
-  local params = luaUtils.Split(paramsString, ";")
+  local params = split(paramsString, ";")
   if #params ~= 5 then
     logger.Error("Error in parsing search params");
   end
