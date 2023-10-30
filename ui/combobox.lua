@@ -1,5 +1,4 @@
 local imgui = require 'ImGui'
-local debugUtils = require 'utils/debug'
 
 local function renderHelpMarker(desc)
     imgui.TextDisabled('(?)')

@@ -9,8 +9,8 @@ local searchParams = require 'common/searchparams'
 
 local next = next
 local args = {...}
-local maxInventorySlots = 32
-local maxBankSlots = 16
+local maxInventorySlots = 22 + mq.TLO.Me.NumBagSlots()
+local maxBankSlots = mq.TLO.Inventory.Bank.TotalSlots()
 
 ---@param item item
 ---@param prefixNum? number
@@ -132,18 +132,10 @@ local function findAndReportItems(reportToo, params)
     logger.Info("Done, nothing found for <%s>", params)
   else
     for _,searchitem in ipairs(searchResults) do
-      if broadCastInterface then
-        broadCastInterface.Broadcast(searchitem:ToReportString(), {reportToo})
-      else
-        logger.Warn("Dannet or EQBC is required to do online searches")
-      end
+      broadCastInterface.Broadcast(searchitem:ToReportString(), {reportToo})
     end
 
-    if broadCastInterface then
-      broadcast.Success("Completed search for <%s>", params)
-    else
-      logger.Info("Completed search for <%s>", params)
-    end
+    broadcast.Success({}, "Completed search for <%s>", params)
   end
 end
 

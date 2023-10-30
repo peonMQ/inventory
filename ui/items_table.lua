@@ -31,8 +31,6 @@ local function draw_item_icon(character, online, item)
     return
   end
 
-  -- Reset the cursor to start position, then fetch and draw the item icon
-  local cursor_x, cursor_y = imgui.GetCursorPos()
   animItems:SetTextureCell(item.Icon - EQ_ICON_OFFSET)
   imgui.DrawTextureAnimation(animItems, ICON_WIDTH, ICON_HEIGHT)
 

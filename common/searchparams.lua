@@ -1,7 +1,6 @@
 
 local luaUtils = require 'utils/lua-table'
 local logger = require 'utils/logging'
-local debug = require 'utils/debug'
 
 ---@param item item
 ---@param searchTerms string

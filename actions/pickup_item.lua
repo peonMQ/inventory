@@ -1,6 +1,6 @@
 local mq = require 'mq'
 local logger = require('utils/logging')
-local doAction = require('actions/action')
+local remoteAction = require('actions/remoteAction')
 
 ---@param character string
 ---@param item SearchItem
@@ -21,7 +21,7 @@ local function pickupItem(character, item)
   if character == mq.TLO.Me.Name() then
     mq.cmd(command)
   else
-    doAction(command, character)
+    remoteAction(command, character)
   end
 end
 

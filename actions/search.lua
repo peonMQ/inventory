@@ -1,7 +1,7 @@
 --- @type Mq
 local logger = require('utils/logging')
 local luaUtils = require('utils/lua-paths')
-local doAction = require('actions/action')
+local remoteAction = require('actions/remoteAction')
 
 ---@type RunningDir
 local runningDir = luaUtils.RunningDir:Parent()
@@ -18,7 +18,7 @@ local function search(searchParams, includeOffline)
   end
 
   local command = string.format('/lua run %s %s "%s"', runningDir:GetRelativeToMQLuaPath("/search"),  mq.TLO.Me.Name(), searchParams:ToSearchString())
-  doAction(command)
+  remoteAction(command)
   return searchResult
 end
 

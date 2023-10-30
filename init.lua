@@ -7,12 +7,7 @@ packageMan.Require('lua-cjson', 'cjson')
 packageMan.Require('lyaml')
 packageMan.Require('lsqlite3')
 
-local logger = require 'utils/logging'
-
---- @type SearchItem
 local searchItem = require 'common/searchitem'
-local search = require 'actions/search'
-local export = require 'actions/export'
 local renderOptions = require 'ui/search-options'
 local renderTable = require 'ui/items_table'
 
@@ -49,11 +44,6 @@ mq.event("itemsearchreporteqbc", '[#1#(msg)] <#2#;#3#;#4#;#5#;#6#;#7#>', itemSea
 local openGUI = true
 local shouldDrawGUI = true
 local terminate = false
-local searchterms = ""
-local searchOffline = false
-local EnterKeyId = 13 -- https://github.com/gallexme/LuaPlugin-GTAV/blob/master/scripts/keys.lua
-
-local leftPanelDefaultWidth = 200
 local leftPanelWidth = 200
 
 

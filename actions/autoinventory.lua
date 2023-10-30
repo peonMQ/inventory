@@ -1,8 +1,8 @@
-local doAction = require('actions/action')
+local remoteAction = require('actions/remoteAction')
 
 local function autoinventory()
   local command = "/autoinv"
-  doAction(command)
+  remoteAction(command)
 end
 
 return autoinventory

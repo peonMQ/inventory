@@ -1,9 +1,8 @@
 local mq = require 'mq'
 local packageMan = require 'mq/PackageMan'
 local logger = require 'utils/logging'
-local plugin = require 'utils/plugins'
-local debugUtils = require 'utils/debug'
 local searchItem = require 'common/searchitem'
+local broadcaster = require('broadcast/broadcastinterface')()
 
 local lfs = packageMan.Require('luafilesystem', 'lfs')
 
@@ -78,29 +77,6 @@ local function getExportFiles(directory, skipClients)
   return files
 end
 
----@return string[]
-local function fetchOnlineClients()
-  local clients={}
-  if not mq.TLO.Plugin("mq2dannet").IsLoaded() or (not mq.TLO.Plugin("mq2eqbc").IsLoaded() and not mq.TLO.EQBC.Connected()) then
-    logger.Debug("Not connected to Dannet or EQBC, unable to find online clients for search.")
-    return clients
-  end
-
-  local connectedClients = {}
-
-  if mq.TLO.Plugin("mq2dannet").IsLoaded() then
-    local peers = mq.TLO.DanNet.Peers():gsub(serverName.."_", "")
-    connectedClients = string.gmatch(peers, "([^|]+)") --[[@as table]]
-  elseif mq.TLO.Plugin("mq2eqbc").IsLoaded() and mq.TLO.EQBC.Connected() then
-    connectedClients = string.gmatch(mq.TLO.EQBC.Names(), "([^%s]+)") --[[@as table]]
-  end
-
-  for client in string.gmatch(mq.TLO.EQBC.Names(), "([^%s]+)") do
-    table.insert(clients, client)
-  end
-  return clients
-end
-
 ---@param searchParams SearchParams
 ---@param exportFile string
 ---@return string, SearchItem
@@ -123,7 +99,7 @@ end
 ---@return table<string, { online: boolean, searchResult: SearchItem }>
 local function search(searchParams)
   logger.Debug('Starting search in export files for offline characters')
-  local clients = fetchOnlineClients()
+  local clients = broadcaster.ConnectedClients()
   local exportFiles = getExportFiles(exportDir, clients)
   local foundItems = {}
   for _,exportFile in ipairs(exportFiles) do

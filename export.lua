@@ -1,14 +1,12 @@
 local mq = require 'mq'
 local logger = require 'utils/logging'
-local luautils = require 'utils/loaders/lua-table'
-local debug = require 'utils/debug'
 local broadcast = require 'broadcast/broadcast'
 
 local searchItem = require 'common/searchitem'
 
 local next = next
-local maxInventorySlots = 32
-local maxBankSlots = 16
+local maxInventorySlots = 22 + mq.TLO.Me.NumBagSlots()
+local maxBankSlots = mq.TLO.Inventory.Bank.TotalSlots()
 
 ---@param item item
 ---@param prefixNum? number
@@ -60,15 +58,15 @@ local function exportInventory()
   if not next(export.bank) and not next(export.inventory)  then
     -- debug.PrintTable(export)
     logger.Info("No items to export.")
-    broadcast.Error("No items to export.")
+    broadcast.Error({}, "No items to export.")
     return
   end
 
   local configDir = mq.configDir.."/"
   local serverName = mq.TLO.MacroQuest.Server()
   local fileName =  string.format("%s/%s/Export/Inventory/%s.lua", configDir, serverName, mq.TLO.Me.Name())
-  luautils.SaveTable(fileName, export)
-  broadcast.Success("Export completed.")
+  mq.pickle(fileName, export)
+  broadcast.Success({}, "Export completed.")
 end
 
 exportInventory()

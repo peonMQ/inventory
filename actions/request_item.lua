@@ -1,6 +1,6 @@
 local mq = require 'mq'
 local logger = require('utils/logging')
-local doAction = require('actions/action')
+local remoteAction = require('actions/remoteAction')
 
 ---@param character string
 ---@param item SearchItem
@@ -24,14 +24,14 @@ local function requestItem(character, item)
     command = string.format('/nomodkey /itemnotify pack%d leftmouseup', packslot)
   end
 
-  doAction(command, character)
-  mq.delay(100)
-  doAction('/mqtar '..mq.TLO.Me.CleanName(), character)
-  mq.delay(100)
-  doAction('/click left target', character)
+  remoteAction(command, character)
+  mq.delay(200)
+  remoteAction('/mqtar '..mq.TLO.Me.CleanName(), character)
+  mq.delay(200)
+  remoteAction('/click left target', character)
   mq.delay(2000, function() return mq.TLO.Window('TradeWnd').Open() end)
   mq.delay(200)
-  doAction('/timed 5 /yes', character)
+  remoteAction('/timed 5 /yes', character)
   mq.delay(500)
   mq.cmdf('/yes')
 end
