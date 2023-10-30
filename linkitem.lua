@@ -1,7 +1,6 @@
 --- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
-local luautils = require 'utils/lua-table'
+local logger = require 'knightlinc/Write'
 
 local args = {...}
 

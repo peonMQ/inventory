@@ -1,7 +1,7 @@
 local mq = require 'mq'
 local imgui = require 'ImGui'
 
-local logger = require 'utils/logging'
+local logger = require 'knightlinc/Write'
 local renderCombobox = require 'ui/combobox'
 local autoinventory = require('actions/autoinventory')
 local export = require('actions/export')

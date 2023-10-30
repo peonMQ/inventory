@@ -1,15 +1,15 @@
 local imgui = require 'ImGui'
 local mq = require 'mq'
-
+local logger = require('knightlinc/Write')
 local packageMan = require 'mq/PackageMan'
 packageMan.Require('luafilesystem', 'lfs')
-packageMan.Require('lua-cjson', 'cjson')
-packageMan.Require('lyaml')
-packageMan.Require('lsqlite3')
 
 local searchItem = require 'common/searchitem'
 local renderOptions = require 'ui/search-options'
 local renderTable = require 'ui/items_table'
+
+logger.prefix = string.format("\at%s\ax", "[Inventory]")
+logger.postfix = function () return string.format(" %s", os.date("%X")) end
 
 ---@type table<string, { online: boolean, searchResult: SearchItem }>
 local searchResult = {}

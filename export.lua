@@ -1,12 +1,12 @@
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require 'knightlinc/Write'
 local broadcast = require 'broadcast/broadcast'
 
 local searchItem = require 'common/searchitem'
 
 local next = next
 local maxInventorySlots = 22 + mq.TLO.Me.NumBagSlots()
-local maxBankSlots = mq.TLO.Inventory.Bank.TotalSlots()
+local maxBankSlots = mq.TLO.Inventory.Bank.BagSlots()
 
 ---@param item item
 ---@param prefixNum? number

@@ -1,6 +1,6 @@
 
 local luaUtils = require 'utils/lua-table'
-local logger = require 'utils/logging'
+local logger = require 'knightlinc/Write'
 
 ---@param item item
 ---@param searchTerms string

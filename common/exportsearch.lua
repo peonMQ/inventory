@@ -1,10 +1,13 @@
 local mq = require 'mq'
 local packageMan = require 'mq/PackageMan'
-local logger = require 'utils/logging'
+local logger = require 'knightlinc/Write'
 local searchItem = require 'common/searchitem'
 local broadcaster = require('broadcast/broadcastinterface')()
 
 local lfs = packageMan.Require('luafilesystem', 'lfs')
+
+logger.prefix = string.format("\at%s\ax", "[ExportSearch]")
+logger.postfix = function () return string.format(" %s", os.date("%X")) end
 
 local configDir = mq.configDir
 local serverName = mq.TLO.MacroQuest.Server()

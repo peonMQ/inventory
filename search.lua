@@ -1,5 +1,5 @@
 local mq = require('mq')
-local logger = require('utils/logging')
+local logger = require('knightlinc/Write')
 local luautils = require('utils/lua-table')
 local broadcast = require('broadcast/broadcast')
 local broadCastInterface = require('broadcast/broadcastinterface')()
@@ -7,10 +7,13 @@ local broadCastInterface = require('broadcast/broadcastinterface')()
 local searchItem = require 'common/searchitem'
 local searchParams = require 'common/searchparams'
 
+logger.prefix = string.format("\at%s\ax", "[Search]")
+logger.postfix = function () return string.format(" %s", os.date("%X")) end
+
 local next = next
 local args = {...}
 local maxInventorySlots = 22 + mq.TLO.Me.NumBagSlots()
-local maxBankSlots = mq.TLO.Inventory.Bank.TotalSlots()
+local maxBankSlots = mq.TLO.Inventory.Bank.BagSlots()
 
 ---@param item item
 ---@param prefixNum? number

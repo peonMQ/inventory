@@ -4,6 +4,7 @@
         "definitions/": true,
         "broadcast/": true,
         "utils/": true,
+        "knightlinc/": true,
     },
     "workbench.colorCustomizations": {
         "editorBracketHighlight.foreground1": "#5caeef",
@@ -23,5 +24,6 @@
         "./definitions/imgui",
         "./broadcast/",
         "./utils/",
+        "./knightlinc"
     ],
 }
