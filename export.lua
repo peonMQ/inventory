@@ -1,9 +1,9 @@
 local mq = require 'mq'
 local logger = require 'knightlinc/Write'
 local broadcast = require 'broadcast/broadcast'
-
 local searchItem = require 'common/searchitem'
 
+broadcast.prefix = '[Export]'
 local next = next
 local maxInventorySlots = 22 + mq.TLO.Me.NumBagSlots()
 local maxBankSlots = mq.TLO.Inventory.Bank.BagSlots()
@@ -58,7 +58,7 @@ local function exportInventory()
   if not next(export.bank) and not next(export.inventory)  then
     -- debug.PrintTable(export)
     logger.Info("No items to export.")
-    broadcast.Error({}, "No items to export.")
+    broadcast.ErrorAll("No items to export.")
     return
   end
 
@@ -66,7 +66,7 @@ local function exportInventory()
   local serverName = mq.TLO.MacroQuest.Server()
   local fileName =  string.format("%s/%s/Export/Inventory/%s.lua", configDir, serverName, mq.TLO.Me.Name())
   mq.pickle(fileName, export)
-  broadcast.Success({}, "Export completed.")
+  broadcast.SuccessAll("Export completed.")
 end
 
 exportInventory()

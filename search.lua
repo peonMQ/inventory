@@ -6,6 +6,7 @@ local broadCastInterface = require('broadcast/broadcastinterface')()
 local searchItem = require 'common/searchitem'
 local searchParams = require 'common/searchparams'
 
+broadcast.prefix = '[Search]'
 logger.prefix = string.format("\at%s\ax", "[Search]")
 logger.postfix = function () return string.format(" %s", os.date("%X")) end
 
@@ -147,7 +148,7 @@ local function findAndReportItems(reportToo, params)
       broadCastInterface.Broadcast(searchitem:ToReportString(), {reportToo})
     end
 
-    broadcast.Success({}, "Completed search for <%s>", params)
+    broadcast.SuccessAll("Completed search for <%s>", params)
   end
 end
 
