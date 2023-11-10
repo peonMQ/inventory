@@ -1,8 +1,10 @@
 local imgui = require 'ImGui'
 local mq = require 'mq'
-
+local state = require 'state'
+local table = require 'ui/controls/table'
 local useitem = require('actions/useitem')
 local pickupItem = require('actions/pickup_item')
+local linkItem = require('actions/linkItem')
 
 -- EQ Texture Animation references
 local animItems = mq.FindTextureAnimation("A_DragItem")
@@ -12,15 +14,7 @@ local ICON_WIDTH = 20
 local ICON_HEIGHT = 20
 local EQ_ICON_OFFSET = 500
 
-local ColumnID_Character = 0
-local ColumnID_Icon = 1
-local ColumnID_Name = 2
-local ColumnID_Amount = 3
-local ColumnID_InventorySlot = 4
-local ColumnID_BagSlot = 5
-
 local tableFlags = bit32.bor(ImGuiTableFlags.PadOuterX, ImGuiTableFlags.Hideable, ImGuiTableFlags.Sortable)
-
 
 ---Draws the individual item icon in the bag.
 ---@param character string
@@ -43,18 +37,18 @@ local function draw_item_icon(character, online, item)
   end
 end
 
-local function renderTable(searchResult)
-  if imgui.BeginTable('search_result_table', 6, tableFlags) then
-    imgui.TableSetupColumn('Character', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Character)
-    imgui.TableSetupColumn('', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Icon)
-    imgui.TableSetupColumn('Name', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Name)
-    imgui.TableSetupColumn('Amount', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_Amount)
-    imgui.TableSetupColumn('Inventory Slot', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_InventorySlot)
-    imgui.TableSetupColumn('Bag Slot', ImGuiTableColumnFlags.WidthFixed, -1.0, ColumnID_BagSlot)
-  end
+---@type TableColumnDefinition[]
+local columnsDefinition = {
+  {label = 'Character', flags = ImGuiTableColumnFlags.WidthFixed}
+  , {label = '', flags = ImGuiTableColumnFlags.WidthFixed}
+  , {label = 'Name', flags = ImGuiTableColumnFlags.WidthFixed}
+  , {label = 'Amount', flags = ImGuiTableColumnFlags.WidthFixed}
+  , {label = 'Inventory Slot', flags = ImGuiTableColumnFlags.WidthFixed}
+  , {label = 'Bag Slot', flags = ImGuiTableColumnFlags.WidthFixed}
+}
 
-  imgui.TableHeadersRow()
-
+---@param searchResult table<string, { online: boolean, searchResult: SearchItem[] }>
+local function renderRows(searchResult)
   for character, result in pairs(searchResult) do
     imgui.TableNextRow()
     for k, item in ipairs (result.searchResult) do
@@ -70,8 +64,8 @@ local function renderTable(searchResult)
         draw_item_icon(character, result.online, item)
       imgui.TableNextColumn()
       imgui.Text(item.Name)
-      if imgui.IsItemClicked(ImGuiMouseButton.Left) and item.ItemLink ~= "" then
-        mq.cmdf("/say %s", item.ItemLink)
+      if imgui.IsItemClicked(ImGuiMouseButton.Left) then
+        linkItem(character, item)
       end
       imgui.TableNextColumn()
       imgui.Text(item.Amount)
@@ -81,8 +75,11 @@ local function renderTable(searchResult)
       imgui.Text(item:HumanBagSlot())
     end
   end
+end
 
-  imgui.EndTable()
+local function renderTable()
+  local renderContent = function() return renderRows(state.SearchResult) end
+  table.RenderTable('search_result_table', columnsDefinition, tableFlags, renderContent)
 end
 
 return renderTable

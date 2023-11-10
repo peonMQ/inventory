@@ -1,8 +1,11 @@
 local mq = require 'mq'
 
 ---@class RunningDir
+---@field scriptPath string
+---@field level number
 local RunningDir = {scriptPath = '', level = 2}
 
+---@param level number|nil
 ---@return RunningDir
 function RunningDir:new(level)
   self.__index = self

@@ -6,9 +6,6 @@ local broadcaster = require('broadcast/broadcastinterface')()
 
 local lfs = packageMan.Require('luafilesystem', 'lfs')
 
-logger.prefix = string.format("\at%s\ax", "[ExportSearch]")
-logger.postfix = function () return string.format(" %s", os.date("%X")) end
-
 local configDir = mq.configDir
 local serverName = mq.TLO.MacroQuest.Server()
 local exportDir =  string.format("%s/%s/Export/Inventory", configDir, serverName)
@@ -49,7 +46,7 @@ end
 
 local function contains(file, list)
   for _,str in ipairs(list) do
-    if file:match('(.*)'..str..'.lua$') then
+    if file:match('(.*)'..str:gsub("^%l", string.upper)..'.lua$') then
       return true
     end
   end
@@ -90,7 +87,7 @@ local function searchFile(searchParams, exportFile)
   local toonFoundItems = {}
   for _, item in pairs(exportItems) do
     if item:MatchesSearchTerms(searchParams) then
-      logger.Debug('Matched item [] for character []', item.Name, characterName)
+      logger.Info('Matched item [%s] for character [%s]', item.Name, characterName)
       table.insert(toonFoundItems, item)
     end
   end

@@ -6,7 +6,7 @@ local broadCastInterface = require('broadcast/broadcastinterface')()
 local searchItem = require 'common/searchitem'
 local searchParams = require 'common/searchparams'
 
-broadcast.prefix = '[Search]'
+broadcast.prefix = broadcast.ColorWrap('[Search]', 'Cyan')
 logger.prefix = string.format("\at%s\ax", "[Search]")
 logger.postfix = function () return string.format(" %s", os.date("%X")) end
 

@@ -64,7 +64,7 @@ local function exportInventory()
 
   local configDir = mq.configDir.."/"
   local serverName = mq.TLO.MacroQuest.Server()
-  local fileName =  string.format("%s/%s/Export/Inventory/%s.lua", configDir, serverName, mq.TLO.Me.Name())
+  local fileName =  string.format("%s/%s/Export/Inventory/%s.lua", configDir, serverName, mq.TLO.Me.Name():gsub("^%l", string.upper))
   mq.pickle(fileName, export)
   broadcast.SuccessAll("Export completed.")
 end

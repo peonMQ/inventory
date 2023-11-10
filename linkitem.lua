@@ -1,6 +1,11 @@
 --- @type Mq
 local mq = require 'mq'
 local logger = require 'knightlinc/Write'
+local broadcast = require('broadcast/broadcast')
+
+broadcast.prefix = broadcast.ColorWrap('[LinkItem]', 'Cyan')
+logger.prefix = string.format("\at%s\ax", "[LinkItem]")
+logger.postfix = function () return string.format(" %s", os.date("%X")) end
 
 local args = {...}
 
@@ -18,13 +23,13 @@ local function linkItem(itemId)
   end
 
   if not item() then
-    logger.Warn("ItemId not found <%s>", itemId)
+    broadcast.Fail("Item with Id not found <%s>", itemId)
   else
     local reportString = string.format('<%s>', item.ItemLink("CLICKABLE")())
-    mq.cmdf("/say %s", reportString)
+    broadcast.SuccessAll("%s", reportString)
   end
 
-  logger.Info("Completed linkItem for <%s>", itemId)
+  logger.Info("Completed linkItem for %s", itemId)
 end
 
 linkItem(args[1])

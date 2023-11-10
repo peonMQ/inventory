@@ -4,15 +4,14 @@ local logger = require('knightlinc/Write')
 local packageMan = require 'mq/PackageMan'
 packageMan.Require('luafilesystem', 'lfs')
 
+local state = require 'state'
 local searchItem = require 'common/searchitem'
 local renderOptions = require 'ui/search-options'
 local renderTable = require 'ui/items_table'
 
 logger.prefix = string.format("\at%s\ax", "[Inventory]")
 logger.postfix = function () return string.format(" %s", os.date("%X")) end
-
----@type table<string, { online: boolean, searchResult: SearchItem }>
-local searchResult = {}
+-- logger.loglevel = 'debug'
 
 ---@param value string
 ---@return integer
@@ -26,12 +25,13 @@ local function toInteger(value)
 end
 
 local function itemSearchReportEvent(line, sender, id, name, amount, inventorySlot, bagSlot, icon)
+  logger.Info("ItemSearchEvent <%s>", line)
   sender = string.gsub(" "..sender, "%W%l", string.upper):sub(2)
   local searchedItem = searchItem:new(toInteger(id), name, toInteger(amount), toInteger(inventorySlot), toInteger(bagSlot), toInteger(icon))
-  local toonResult = searchResult[sender] or { online = true, searchResult = {} }
+  local toonResult = state.SearchResult[sender] or { online = true, searchResult = {} }
   table.insert(toonResult.searchResult, searchedItem)
-  if not searchResult[sender] then
-    searchResult[sender] = toonResult
+  if not state.SearchResult[sender] then
+    state.SearchResult[sender] = toonResult
   end
 end
 
@@ -47,11 +47,10 @@ local terminate = false
 local leftPanelWidth = 200
 
 
-
 local function LeftPaneWindow()
   local x,y = imgui.GetContentRegionAvail()
   if imgui.BeginChild("left", leftPanelWidth, y-1, true) then
-    searchResult = renderOptions(searchResult)
+    renderOptions()
   end
   imgui.EndChild()
 end
@@ -59,7 +58,7 @@ end
 local function RightPaneWindow()
   local x,y = imgui.GetContentRegionAvail()
   if imgui.BeginChild("right", x, y-1, true) then
-    renderTable(searchResult)
+    renderTable()
   end
   imgui.EndChild()
 end
