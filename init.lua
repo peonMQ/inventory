@@ -3,14 +3,15 @@ local mq = require 'mq'
 local logger = require('knightlinc/Write')
 local packageMan = require 'mq/PackageMan'
 packageMan.Require('luafilesystem', 'lfs')
+packageMan.Require('lsqlite3')
 
 local state = require 'state'
 local searchItem = require 'common/searchitem'
 local renderOptions = require 'ui/search-options'
 local renderTable = require 'ui/items_table'
 
-logger.prefix = string.format("\at%s\ax", "[Inventory]")
-logger.postfix = function () return string.format(" %s", os.date("%X")) end
+logger.prefix = string.format("[%s][\at%s\ax]", os.date("%X"), "Inventory")
+-- logger.postfix = function () return string.format(" %s", os.date("%X")) end
 -- logger.loglevel = 'debug'
 
 ---@param value string

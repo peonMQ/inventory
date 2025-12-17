@@ -2,8 +2,10 @@ local mq = require 'mq'
 local logger = require 'knightlinc/Write'
 local broadcast = require 'broadcast/broadcast'
 local searchItem = require 'common/searchitem'
+local repository = require 'inventoryRepository'
 
-broadcast.prefix = '[Export]'
+logger.prefix = string.format("[%s][\at%s\ax]", os.date("%X"), "Inventory")
+broadcast.prefix = string.format("[%s][\at%s\ax]", os.date("%X"), '[Export]')
 local next = next
 local maxInventorySlots = 22 + mq.TLO.Me.NumBagSlots()
 local maxBankSlots = mq.TLO.Inventory.Bank.BagSlots()
@@ -61,11 +63,15 @@ local function exportInventory()
     broadcast.ErrorAll("No items to export.")
     return
   end
+  
+  repository.Delete(mq.TLO.Me.Name())
+  repository.InsertAll(mq.TLO.Me.Name(), export.bank)
+  repository.InsertAll(mq.TLO.Me.Name(), export.inventory)
 
-  local configDir = mq.configDir.."/"
-  local serverName = mq.TLO.MacroQuest.Server()
-  local fileName =  string.format("%s/%s/Export/Inventory/%s.lua", configDir, serverName, mq.TLO.Me.Name():gsub("^%l", string.upper))
-  mq.pickle(fileName, export)
+  -- local configDir = mq.configDir.."/"
+  -- local serverName = mq.TLO.MacroQuest.Server()
+  -- local fileName =  string.format("%s/%s/Export/Inventory/%s.lua", configDir, serverName, mq.TLO.Me.Name():gsub("^%l", string.upper))
+  -- mq.pickle(fileName, export)
   broadcast.SuccessAll("Export completed.")
 end
 
