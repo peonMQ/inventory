@@ -1,7 +1,7 @@
 local imgui = require 'ImGui'
 local mq = require 'mq'
 local state = require 'state'
-local table = require 'ui/controls/table'
+local uiTable = require 'ui/controls/table'
 local useitem = require('actions/useitem')
 local pickupItem = require('actions/pickup_item')
 local linkItem = require('actions/linkItem')
@@ -14,7 +14,7 @@ local ICON_WIDTH = 20
 local ICON_HEIGHT = 20
 local EQ_ICON_OFFSET = 500
 
-local tableFlags = bit32.bor(ImGuiTableFlags.PadOuterX, ImGuiTableFlags.Hideable, ImGuiTableFlags.Sortable)
+local tableFlags = bit32.bor(ImGuiTableFlags.PadOuterX, ImGuiTableFlags.Hideable)
 
 ---Draws the individual item icon in the bag.
 ---@param character string
@@ -42,14 +42,26 @@ local columnsDefinition = {
   {label = 'Character', flags = ImGuiTableColumnFlags.WidthFixed}
   , {label = '', flags = ImGuiTableColumnFlags.WidthFixed}
   , {label = 'Name', flags = ImGuiTableColumnFlags.WidthFixed}
-  , {label = 'Amount', flags = ImGuiTableColumnFlags.WidthFixed}
+  , {label = 'Quantity', flags = ImGuiTableColumnFlags.WidthFixed}
   , {label = 'Inventory Slot', flags = ImGuiTableColumnFlags.WidthFixed}
   , {label = 'Bag Slot', flags = ImGuiTableColumnFlags.WidthFixed}
 }
 
 ---@param searchResult table<string, { online: boolean, searchResult: SearchItem[] }>
 local function renderRows(searchResult)
-  for character, result in pairs(searchResult) do
+
+  -- build sorted key list
+  local sortedKeys = {}
+  for k in pairs(searchResult) do
+    sortedKeys[#sortedKeys + 1] = k
+  end
+  
+  if #sortedKeys > 1 then
+    table.sort(sortedKeys)
+  end
+
+  for _, character in ipairs(sortedKeys) do
+    local result = searchResult[character]
     imgui.TableNextRow()
     for k, item in ipairs (result.searchResult) do
       imgui.TableNextColumn()
@@ -79,7 +91,7 @@ end
 
 local function renderTable()
   local renderContent = function() return renderRows(state.SearchResult) end
-  table.RenderTable('search_result_table', columnsDefinition, tableFlags, renderContent)
+  uiTable.RenderTable('search_result_table', columnsDefinition, tableFlags, renderContent)
 end
 
 return renderTable
