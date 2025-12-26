@@ -23,6 +23,7 @@ db:exec[[
       , amount INTEGER
       , inventory_slot INTEGER
       , bag_slot INTEGER
+      , item_link TEXT
   );
 ]]
 
@@ -57,9 +58,9 @@ local function getItems(terms)
   local results = {}
   for row in stmt:nrows() do 
     if not results[row.character_name] then
-      results[row.character_name] = {_searchItem:new(row.item_id, row.item_name, row.amount, row.inventory_slot, row.bag_slot)}
+      results[row.character_name] = {_searchItem:new(row.item_id, row.item_name, row.amount, row.inventory_slot, row.bag_slot, row.item_link)}
     else
-      table.insert(results[row.character_name], _searchItem:new(row.item_id, row.item_name, row.amount, row.inventory_slot, row.bag_slot))
+      table.insert(results[row.character_name], _searchItem:new(row.item_id, row.item_name, row.amount, row.inventory_slot, row.bag_slot, row.item_link))
     end
   end
   stmt:finalize()
@@ -93,7 +94,7 @@ local function deleteInt(characterName)
       mq.delay(5) -- short backoff
     else
       logger.Error("DELETE failed (%s): %s", tostring(rc), db:errmsg())
-      broadcast.ErrorAll("INSERT failed (%s): %s", tostring(rc), db:errmsg())
+      broadcast.ErrorAll("DELETE failed (%s): %s", tostring(rc), db:errmsg())
       return false
     end
   end
@@ -109,8 +110,8 @@ end
 local insertStmt = assert(
   db:prepare([[
     INSERT INTO inventory
-    (character_name, item_id, item_name, amount, inventory_slot, bag_slot)
-    VALUES (?, ?, ?, ?, ?, ?)
+    (character_name, item_id, item_name, amount, inventory_slot, bag_slot, item_link)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   ]]),
   db:errmsg()
 )
@@ -127,7 +128,8 @@ local function insert(characterName, searchItem)
       searchItem.Name,
       searchItem.Amount,
       searchItem.InventorySlot,
-      searchItem.BagSlot
+      searchItem.BagSlot,
+      searchItem.ItemLink
     )
 
     local rc = insertStmt:step()
