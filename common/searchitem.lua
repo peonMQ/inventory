@@ -162,7 +162,7 @@ end
 ---@param searchParams SearchParams
 ---@return boolean
 function SearchItem:MatchesSearchTerms(searchParams)
-  if not matchesSearchTerms(self, searchParams.Terms) then
+  if searchParams.Terms ~= '*' and not matchesSearchTerms(self, searchParams.Terms) then
     logger.Debug("Did not match terms for %s", self.Name)
     return false
   end
