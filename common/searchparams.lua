@@ -20,6 +20,10 @@ end
 ---@param searchTerms string
 ---@return boolean
 local function matchesSearchTerms(item, searchTerms)
+  if searchTerms == '*'  then
+    return true
+  end
+
   local text = item.Name():lower()
   for searchTerm in string.gmatch(searchTerms:lower(), "%S+") do
     if not text:find(searchTerm) then

@@ -3,7 +3,7 @@ local packageMan = require 'mq/PackageMan'
 local logger = require 'knightlinc/Write'
 local searchItem = require 'common/searchitem'
 local repository = require 'inventoryRepository'
-local broadcaster = require('broadcast/broadcastinterface')()
+local broadcaster = require('broadcast/broadcastinterface')("EQBC")
 
 local lfs = packageMan.Require('luafilesystem', 'lfs')
 

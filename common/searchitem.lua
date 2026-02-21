@@ -28,6 +28,10 @@ end
 ---@param searchTerms string
 ---@return boolean
 local function matchesSearchTerms(item, searchTerms)
+  if searchTerms == '*'  then
+    return true
+  end
+
   local text = item.Name:lower()
   for searchTerm in string.gmatch(searchTerms:lower(), "%S+") do
     if not text:find(searchTerm) then
@@ -162,7 +166,7 @@ end
 ---@param searchParams SearchParams
 ---@return boolean
 function SearchItem:MatchesSearchTerms(searchParams)
-  if searchParams.Terms ~= '*' and not matchesSearchTerms(self, searchParams.Terms) then
+  if not matchesSearchTerms(self, searchParams.Terms) then
     logger.Debug("Did not match terms for %s", self.Name)
     return false
   end

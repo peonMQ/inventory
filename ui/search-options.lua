@@ -62,7 +62,7 @@ local function renderSearchOptions()
   searchOffline, _ = imgui.Checkbox('Incl. Offline', searchOffline)
 
   if imgui.Button("Search") or (isSearchFocused and imgui.IsKeyPressed(ImGuiKey.Enter)) then
-    if searchParams.Terms ~= '*' and #state.Searchterms < minSearchTextLength then
+    if state.Searchterms ~= '*' and #state.Searchterms < minSearchTextLength then
       logger.Error("Searchtext is to short <%d>, must me minimum %d characters.", #state.Searchterms, minSearchTextLength)
     else
       search(searchParams:new(state.Searchterms, slotFilter.key, typeFilter.key, classFilter.key, locationFilter.key), searchOffline)

@@ -1,7 +1,7 @@
 local mq = require('mq')
 local logger = require('knightlinc/Write')
 local broadcast = require('broadcast/broadcast')
-local broadCastInterface = require('broadcast/broadcastinterface')()
+local broadCastInterface = require('broadcast/broadcastinterface')("EQBC")
 
 local searchItem = require 'common/searchitem'
 local searchParams = require 'common/searchparams'

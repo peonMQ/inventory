@@ -1,4 +1,4 @@
-local broadcaster = require('broadcast/broadcastinterface')()
+local broadcaster = require('broadcast/broadcastinterface')("EQBC")
 
 ---@param command string
 ---@param character? string
