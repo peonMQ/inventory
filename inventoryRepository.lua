@@ -4,12 +4,23 @@ local broadcast = require 'broadcast/broadcast'
 local logger = require('knightlinc/Write')
 local _searchItem = require 'common/searchitem'
 
-local sqlite3 = packageMan.Require('lsqlite3')
+local lfs = packageMan.Require('luafilesystem', 'lfs')
 local configDir = (mq.configDir.."/"):gsub("\\", "/"):gsub("%s+", "%%20")
 local serverName = mq.TLO.MacroQuest.Server()
-local dbFileName = configDir..serverName.."/data/inventory.db"
+local dbFilePath = configDir..serverName.."/data"
+local success = lfs.mkdir(dbFilePath)
+if not success then
+    logger.Fatal("Failed to create directory <%s> (it might already exist or an error occurred).", dbFilePath)
+end
+
+local sqlite3 = packageMan.Require('lsqlite3')
+local dbFileName = dbFilePath.."/inventory.db"
 local connectingString = string.format("file:///%s?cache=shared&mode=rwc&_journal_mode=WAL", dbFileName)
-local db = sqlite3.open(connectingString, sqlite3.OPEN_READWRITE + sqlite3.OPEN_CREATE + sqlite3.OPEN_URI)
+local db, error_code, error_message = sqlite3.open(connectingString, sqlite3.OPEN_READWRITE + sqlite3.OPEN_CREATE + sqlite3.OPEN_URI)
+if db == nil then
+    logger.Fatal("Error opening database %s with error code %s\n%s", connectingString, tostring(error_code), error_message)
+    return
+end
 
 local unpack = table.unpack or unpack
 
