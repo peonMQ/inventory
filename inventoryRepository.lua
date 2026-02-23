@@ -8,9 +8,15 @@ local lfs = packageMan.Require('luafilesystem', 'lfs')
 local configDir = (mq.configDir.."/"):gsub("\\", "/"):gsub("%s+", "%%20")
 local serverName = mq.TLO.MacroQuest.Server()
 local dbFilePath = configDir..serverName.."/data"
-local success = lfs.mkdir(dbFilePath)
-if not success then
+
+local attr = lfs.attributes(dbFilePath)
+if not attr then
+    local success, err = lfs.mkdir(dbFilePath)
+    if not success then
     logger.Fatal("Failed to create directory <%s> (it might already exist or an error occurred).", dbFilePath)
+    end
+elseif attr.mode ~= "directory" then
+    logger.Fatal("Path <%s> exists but is not a directory.", dbFilePath)
 end
 
 local sqlite3 = packageMan.Require('lsqlite3')
@@ -31,12 +37,28 @@ db:exec[[
       , character_name TEXT NOT NULL
       , item_id INTEGER
       , item_name INTEGER
+      , item_type TEXT
       , amount INTEGER
       , inventory_slot INTEGER
       , bag_slot INTEGER
+      , container INTEGER
+      , icon INTEGER
+      , damage INTEGER
+      , classes TEXT
+      , worn_slots TEXT
       , item_link TEXT
   );
 ]]
+
+local function splitComma(str)
+    local result = {}
+
+    for value in string.gmatch(str, "([^,]+)") do
+        table.insert(result, value)
+    end
+
+    return result
+end
 
 -- Trim whitespace from both ends
 local function trim(s)
@@ -69,9 +91,9 @@ local function getItems(terms)
   local results = {}
   for row in stmt:nrows() do 
     if not results[row.character_name] then
-      results[row.character_name] = {_searchItem:new(row.item_id, row.item_name, row.amount, row.inventory_slot, row.bag_slot, row.item_link)}
+      results[row.character_name] = {_searchItem:new(row.item_id, row.item_name, row.item_type, row.amount, row.inventory_slot, row.bag_slot, row.container, row.icon, row.damage, splitComma(row.classes), row.item_link)}
     else
-      table.insert(results[row.character_name], _searchItem:new(row.item_id, row.item_name, row.amount, row.inventory_slot, row.bag_slot, row.item_link))
+      table.insert(results[row.character_name], _searchItem:new(row.item_id, row.item_name, row.item_type, row.amount, row.inventory_slot, row.bag_slot, row.container, row.icon, row.damage, splitComma(row.classes), splitComma(row.worn_slots), row.item_link))
     end
   end
   stmt:finalize()
@@ -121,8 +143,8 @@ end
 local insertStmt = assert(
   db:prepare([[
     INSERT INTO inventory
-    (character_name, item_id, item_name, amount, inventory_slot, bag_slot, item_link)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    (character_name, item_id, item_name, item_type, amount, inventory_slot, bag_slot, container, icon, damage, classes, worn_slots, item_link)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ]]),
   db:errmsg()
 )
@@ -137,9 +159,15 @@ local function insert(characterName, searchItem)
       characterName,
       searchItem.Id,
       searchItem.Name,
+      searchItem.Type,
       searchItem.Amount,
       searchItem.InventorySlot,
       searchItem.BagSlot,
+      searchItem.Container,
+      searchItem.Icon,
+      searchItem.Damage,
+      table.concat(searchItem.Classes, ","),
+      table.concat(searchItem.WornSlots, ","),
       searchItem.ItemLink
     )
 

@@ -1,7 +1,6 @@
 {
     "editor.bracketPairColorization.enabled": true,
     "files.exclude": {
-        "definitions/": true,
         "broadcast/": true,
         "knightlinc/": true,
     },
@@ -19,8 +18,9 @@
     "editor.tabSize": 2,
     "Lua.runtime.version": "LuaJIT",
     "Lua.workspace.library": [
-        "./definitions",
         "./broadcast/",
-        "./knightlinc"
+        "./knightlinc",
+        "c:\\Users\\asp\\AppData\\Roaming\\Code\\User\\globalStorage\\zenithcodeforge.mq-defs\\file-downloader-downloads\\macroquest\\mq-definitions-master"
     ],
+    "mq-defs.etag": "W/\"4a52e45ae76e2aae1ea74e20341b4b9f13397eca09ef66118435e20b758b9c9c\"",
 }

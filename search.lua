@@ -1,14 +1,20 @@
 local mq = require('mq')
+local actors = require("actors")
 local logger = require('knightlinc/Write')
 local broadcast = require('broadcast/broadcast')
 local broadCastInterface = require('broadcast/broadcastinterface')("EQBC")
+local runningDir = require('lib/runningdir')
+local searchItem = require('common/searchitem')
+local searchParams = require('common/searchparams')
+local state = require('state')
 
-local searchItem = require 'common/searchitem'
-local searchParams = require 'common/searchparams'
+runningDir = runningDir:new(2)
 
 broadcast.prefix = broadcast.ColorWrap('[Search]', 'Cyan')
 logger.prefix = string.format("\at%s\ax", "[Search]")
 logger.postfix = function () return string.format(" %s", os.date("%X")) end
+
+local searchActor = actors.register(function(message) end)
 
 local next = next
 local args = {...}
@@ -26,20 +32,15 @@ local function tableConcat(t1,t2)
 end
 
 ---@param item item
----@param prefixNum? number
----@return SearchItem
-local function convert(item, prefixNum)
-  return searchItem:new(item.ID(), item.Name(), item.Stack(), item.ItemSlot() + (prefixNum or 0), item.ItemSlot2())
-end
-
----@param item item
 ---@param searchParams SearchParams
----@param isBank boolean?
 ---@param prefixNum? number
 ---@return boolean, SearchItem|nil
-local function matchItem(item, searchParams, isBank, prefixNum)
-  if item() and searchParams:Matches(item, isBank) then
-    return true, convert(item, prefixNum)
+local function matchItem(item, searchParams, prefixNum)
+  if item() then
+    local searchableItem = searchItem:convert(item, prefixNum)
+    if searchParams:Matches(searchableItem) then
+      return true, searchableItem
+    end
   end
 
   return false, nil
@@ -47,15 +48,14 @@ end
 
 ---@param container item
 ---@param searchParams SearchParams
----@param isBank boolean?
 ---@param prefixNum? number
 ---@return SearchItem[]
-local function findItemInContainer(container, searchParams, isBank, prefixNum)
+local function findItemInContainer(container, searchParams, prefixNum)
   logger.Debug("findItemInContainer <%s> <%s>", container.Name(), container.Container())
   local searchResult = {}
   for i=1,container.Container() do
     local item = container.Item(i)
-    local success, matchedItem = matchItem(item, searchParams, isBank, prefixNum)
+    local success, matchedItem = matchItem(item, searchParams, prefixNum)
     if success then
       searchResult[#searchResult+1] = matchedItem
     end
@@ -94,13 +94,13 @@ local function findItemInBank(searchParams)
   local bank = mq.TLO.Me.Bank
   for i=1, maxBankSlots do
     local item = bank(i) --[[@as item]]
-    local success, matchedItem = matchItem(item, searchParams, true, 2000)
+    local success, matchedItem = matchItem(item, searchParams, 2000)
     if success then
       searchResult[#searchResult+1] = matchedItem
     end
 
     if item.Container() and item.Container() > 0 then
-      local containerSearchResult = findItemInContainer(item, searchParams, true, 2000)
+      local containerSearchResult = findItemInContainer(item, searchParams, 2000)
       tableConcat(searchResult, containerSearchResult)
     end
   end
@@ -145,7 +145,8 @@ local function findAndReportItems(reportToo, params)
     logger.Info("Done, nothing found for <%s>", params)
   else
     for _,searchitem in ipairs(searchResults) do
-      broadCastInterface.Broadcast(searchitem:ToReportString(), {reportToo})
+      logger.Debug("Reporting <%s> to <%s> to { mailbox = %s, script= %s}", searchitem.Name, reportToo, state.SearchMailBox, runningDir:RelativeToMQLuaPath())
+      searchActor:send({ mailbox = state.SearchMailBox, script=runningDir:RelativeToMQLuaPath(), character=reportToo }, searchitem)
     end
 
     broadcast.SuccessAll("Completed search for <%s>", params)

@@ -4,7 +4,6 @@ local state = require 'state'
 local uiTable = require 'ui/controls/table'
 local useitem = require('actions/useitem')
 local pickupItem = require('actions/pickup_item')
-local linkItem = require('actions/linkItem')
 
 -- EQ Texture Animation references
 local animItems = mq.FindTextureAnimation("A_DragItem")
@@ -75,12 +74,16 @@ local function renderRows(searchResult)
       imgui.TableNextColumn()
         draw_item_icon(character, result.online, item)
       imgui.TableNextColumn()
-      imgui.Text(item.Name)
-      if imgui.IsItemClicked(ImGuiMouseButton.Left) then
-        linkItem(character, item)
+      if #item.ItemLink > 1 then
+        imgui.TextColored(ImVec4(0.0, 1.0, 1.0, 1.0), item.Name)
+        if imgui.IsItemClicked(ImGuiMouseButton.Left) then
+          mq.cmdf('/executelink %s', item.ItemLink)
+        end
+      else
+        imgui.Text(item.Name)
       end
       imgui.TableNextColumn()
-      imgui.Text(item.Amount)
+      imgui.Text(string.format("%d", item.Amount))
       imgui.TableNextColumn()
       imgui.Text(item:HumanInventorySlot())
       imgui.TableNextColumn()

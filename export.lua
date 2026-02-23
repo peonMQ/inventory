@@ -10,13 +10,6 @@ local next = next
 local maxInventorySlots = 22 + mq.TLO.Me.NumBagSlots()
 local maxBankSlots = mq.TLO.Inventory.Bank.BagSlots()
 
----@param item item
----@param prefixNum? number
----@return SearchItem
-local function convert(item, prefixNum)
-  return searchItem:new(item.ID(), item.Name(), item.Stack(), item.ItemSlot() + (prefixNum or 0), item.ItemSlot2())
-end
-
 local function exportInventory()
   local export = {
     inventory = {},
@@ -27,14 +20,14 @@ local function exportInventory()
   for i=1, maxInventorySlots do
     local item = inventory(i) --[[@as item]]
     if item() then
-      export.inventory[#export.inventory+1] = convert(item)
+      export.inventory[#export.inventory+1] = searchItem:convert(item)
     end
 
     if item.Container() and item.Container() > 0 then
       for i=1,item.Container() do
         local containerItem = item.Item(i)
         if containerItem() then
-          export.inventory[#export.inventory+1] = convert(containerItem)
+          export.inventory[#export.inventory+1] = searchItem:convert(containerItem)
         end
       end
     end
@@ -44,14 +37,14 @@ local function exportInventory()
   for i=1, maxBankSlots do
     local item = bank(i) --[[@as item]]
     if item() then
-      export.bank[#export.bank+1] = convert(item, 2000)
+      export.bank[#export.bank+1] = searchItem:convert(item, 2000)
     end
 
     if item.Container() and item.Container() > 0 then
       for i=1,item.Container() do
         local containerItem = item.Item(i)
         if containerItem() then
-          export.bank[#export.bank+1] = convert(containerItem, 2000)
+          export.bank[#export.bank+1] = searchItem:convert(containerItem, 2000)
         end
       end
     end

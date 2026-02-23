@@ -1,6 +1,28 @@
 local mq = require('mq')
 local logger = require 'knightlinc/Write'
 
+---@param item item
+---@return string[]
+local function parseClasses(item)
+  local classes = {}
+  for i=1, item.Classes() do
+    classes[#classes+1] = item.Class(i).Name()
+  end
+
+  return classes
+end
+
+---@param item item
+---@return string[]
+local function parseWornSlots(item)
+  local classes = {}
+  for i=1, item.WornSlots() do
+    classes[#classes+1] = item.WornSlot(i).Name()
+  end
+
+  return classes
+end
+
 local function findItemLink(id)
   local item = mq.TLO.FindItem(id)
   if item() ~= nil then
@@ -24,65 +46,58 @@ local function findItemIcon(id)
   return nil
 end
 
----@param item SearchItem
----@param searchTerms string
----@return boolean
-local function matchesSearchTerms(item, searchTerms)
-  if searchTerms == '*'  then
-    return true
-  end
-
-  local text = item.Name:lower()
-  for searchTerm in string.gmatch(searchTerms:lower(), "%S+") do
-    if not text:find(searchTerm) then
-      return false
-    end
-  end
-
-  return true
-end
-
----@param item SearchItem
----@param filter string
----@return boolean
-local function matchesLocationFilter(item, filter)
-  if filter == "any" then
-    return true
-  end
-
-  local isBank = item.InventorySlot >= 2000
-  return (filter == 'inventory' and not (isBank))
-          or (filter == 'bank' and (isBank))
-          or (filter == 'equiped' and item.InventorySlot() < 23)
-end
-
 ---@class SearchItem
 ---@field public Id number
 ---@field public Name string
+---@field public Type string
 ---@field public Icon number
 ---@field public Amount number
 ---@field public InventorySlot number
 ---@field public BagSlot number
+---@field public Container number
+---@field public Damage number
+---@field public Classes string[]
+---@field public WornSlots string[]
 ---@field public ItemLink string
-local SearchItem = {Id = 0, Name = "", Icon = 0, Amount = 0, InventorySlot = 0, BagSlot = -1, ItemLink= ""}
+local SearchItem = {Id = 0, Name = "", Type = "", Icon = 0, Amount = 0, InventorySlot = 0, BagSlot = -1, Container = 0, Damage = 0, Classes = {}, WornSlots = {}, ItemLink= ""}
 
 ---@param id number
 ---@param name string
+---@param type string
 ---@param amount number
 ---@param inventorySlot number
 ---@param bagSlot number
+---@param container number
+---@param icon number
+---@param damage number
+---@param classes string[]
+---@param wornSlots string[]
+---@param itemLink string|nil
 ---@return SearchItem
-function SearchItem:new (id, name, amount, inventorySlot, bagSlot, icon)
+function SearchItem:new (id, name, type, amount, inventorySlot, bagSlot, container, icon, damage, classes, wornSlots, itemLink)
   self.__index = self
   local o = setmetatable({}, self)
   o.Id = id or error("Id required.")
   o.Name = name or error("Name is required.")
+  o.Type = type or error("Type is required.")
   o.Amount = amount or error("Amount is required.")
   o.InventorySlot = inventorySlot or error("InventorySlot is required.")
   o.BagSlot = bagSlot or -1
-  o.ItemLink = findItemLink(id) or ""
+  o.Container = container or 0
+  o.Damage = damage or 0
+  o.Classes = classes or error("Classes is required.")
+  o.WornSlots = wornSlots or error("WornSlots is required.")
+  o.ItemLink = findItemLink(id) or itemLink or ""
   o.Icon = findItemIcon(id) or icon or 0
   return o
+end
+
+
+---@param item item
+---@param prefixNum? number
+---@return SearchItem
+function SearchItem:convert (item, prefixNum)
+  return SearchItem:new(item.ID(), item.Name(), item.Type(), item.Stack(), item.ItemSlot() + (prefixNum or 0), item.ItemSlot2(), item.Container(), item.Icon(), item.Damage(), parseClasses(item), parseWornSlots(item), findItemLink(item.ID())  )
 end
 
 ---@return string
@@ -149,6 +164,16 @@ function SearchItem:CanPickUp ()
   return self.InventorySlot >= 23 and self.InventorySlot <= 32
 end
 
+---@return boolean
+function SearchItem:IsInBank ()
+  return self.InventorySlot >= 2000 and self.InventorySlot <= 2023
+end
+
+---@return boolean
+function SearchItem:IsEquipped ()
+  return self.InventorySlot >= 0 and self.InventorySlot <= 22
+end
+
 ---@return string
 function SearchItem:HumanBagSlot ()
   if self.BagSlot > -1 then
@@ -161,22 +186,6 @@ end
 ---@return string
 function SearchItem:ToReportString ()
   return string.format("<%s;%s;%s;%s;%s;%s>", self.Id, self.Name, self.Amount, self.InventorySlot, self.BagSlot, self.Icon)
-end
-
----@param searchParams SearchParams
----@return boolean
-function SearchItem:MatchesSearchTerms(searchParams)
-  if not matchesSearchTerms(self, searchParams.Terms) then
-    logger.Debug("Did not match terms for %s", self.Name)
-    return false
-  end
-
-  if not matchesLocationFilter(self, searchParams.LocationFilter) then
-    logger.Debug("Did not match locationfilter for %sfor filter <%s>", self.Name, searchParams.LocationFilter)
-    return false
-  end
-
-  return true
 end
 
 return SearchItem

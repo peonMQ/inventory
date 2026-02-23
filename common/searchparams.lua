@@ -16,7 +16,7 @@ local function split (inputstr, separator)
   return subStrings
 end
 
----@param item item
+---@param item SearchItem
 ---@param searchTerms string
 ---@return boolean
 local function matchesSearchTerms(item, searchTerms)
@@ -24,7 +24,7 @@ local function matchesSearchTerms(item, searchTerms)
     return true
   end
 
-  local text = item.Name():lower()
+  local text = item.Name:lower()
   for searchTerm in string.gmatch(searchTerms:lower(), "%S+") do
     if not text:find(searchTerm) then
       return false
@@ -34,7 +34,7 @@ local function matchesSearchTerms(item, searchTerms)
   return true
 end
 
----@param item item
+---@param item SearchItem
 ---@param filter string
 ---@return boolean
 local function matchesSlotFilter(item, filter)
@@ -42,10 +42,16 @@ local function matchesSlotFilter(item, filter)
     return true
   end
 
-  return item.WornSlot(filter)()
+  for _, value in ipairs(item.WornSlots) do
+    if string.lower(value) == filter then
+      return true
+    end
+  end
+
+  return false
 end
 
----@param item item
+---@param item SearchItem
 ---@param filter string
 ---@return boolean
 local function matchesTypeFilter(item, filter)
@@ -53,12 +59,12 @@ local function matchesTypeFilter(item, filter)
     return true
   end
 
-  return (filter == 'weapon' and (item.Damage() > 0 or item.Type() == 'Shield'))
-          or (filter == 'container' and item.Container() > 0)
-          or item.Type() == filter
+  return (filter == 'weapon' and (item.Damage > 0 or item.Type == 'Shield'))
+          or (filter == 'container' and item.Container > 0)
+          or item.Type == filter
 end
 
----@param item item
+---@param item SearchItem
 ---@param filter string
 ---@return boolean
 local function matchesClassFilter(item, filter)
@@ -66,24 +72,30 @@ local function matchesClassFilter(item, filter)
     return true
   end
 
-  if item.Classes() == 16 or item.Class(filter)() then
+  if #item.Classes == 16 then
     return true
+  end
+
+  for _, value in ipairs(item.Classes) do
+    if string.lower(value) == filter then
+      return true
+    end
   end
 
   return false
 end
 
----@param item item
+---@param item SearchItem
 ---@param filter string
 ---@return boolean
-local function matchesLocationFilter(item, isBank, filter)
+local function matchesLocationFilter(item, filter)
   if filter == "any" then
     return true
   end
 
-  return (filter == 'inventory' and not (isBank))
-          or (filter == 'bank' and (isBank))
-          or (filter == 'equiped' and item.ItemSlot() < 23)
+  return (filter == 'inventory' and not (item:IsInBank()))
+          or (filter == 'bank' and (item:IsInBank()))
+          or (filter == 'equiped' and item:IsEquipped())
 end
 
 ---@class SearchParams
@@ -111,29 +123,31 @@ function SearchParams:new(terms, slotFilter, typeFilter, classFilter, locationFi
   return o
 end
 
-function SearchParams:Matches(item, isBank)
+---@param item SearchItem
+---@return boolean
+function SearchParams:Matches(item)
   if not matchesSearchTerms(item, self.Terms) then
-    logger.Debug("Did not match terms for %s", item.Name())
+    logger.Debug("Did not match terms for %s", item.Name)
     return false
   end
 
   if not matchesSlotFilter(item, self.SlotFilter) then
-    logger.Debug("Did not match slotfilter for %sfor filter <%s>", item.Name(), self.SlotFilter)
+    logger.Debug("Did not match slotfilter for %sfor filter <%s>", item.Name, self.SlotFilter)
     return false
   end
 
   if not matchesTypeFilter(item, self.TypeFilter) then
-    logger.Debug("Did not match typefilter for %s for filter <%s>", item.Name(), self.TypeFilter)
+    logger.Debug("Did not match typefilter for %s for filter <%s>", item.Name, self.TypeFilter)
     return false
   end
 
   if not matchesClassFilter(item, self.ClassFilter) then
-    logger.Debug("Did not match classfilter for %s for filter <%s>", item.Name(), self.ClassFilter)
+    logger.Debug("Did not match classfilter for %s for filter <%s>", item.Name, self.ClassFilter)
     return false
   end
 
-  if not matchesLocationFilter(item, isBank, self.LocationFilter) then
-    logger.Debug("Did not match locationfilter for %sfor filter <%s>", item.Name(), self.LocationFilter)
+  if not matchesLocationFilter(item, self.LocationFilter) then
+    logger.Debug("Did not match locationfilter for %sfor filter <%s>", item.Name, self.LocationFilter)
     return false
   end
 
