@@ -28,6 +28,11 @@ local function findItemLink(id)
   if item() ~= nil then
       return item.ItemLink("CLICKABLE")()
   end
+  
+  item = mq.TLO.FindItemBank(id)
+  if item() ~= nil then
+      return item.ItemLink("CLICKABLE")()
+  end
 
   return nil
 end
@@ -87,7 +92,7 @@ function SearchItem:new (id, name, type, amount, inventorySlot, bagSlot, contain
   o.Damage = damage or 0
   o.Classes = classes or error("Classes is required.")
   o.WornSlots = wornSlots or error("WornSlots is required.")
-  o.ItemLink = findItemLink(id) or itemLink or ""
+  o.ItemLink = itemLink or findItemLink(id) or ""
   o.Icon = findItemIcon(id) or icon or 0
   return o
 end
@@ -97,7 +102,7 @@ end
 ---@param prefixNum? number
 ---@return SearchItem
 function SearchItem:convert (item, prefixNum)
-  return SearchItem:new(item.ID(), item.Name(), item.Type(), item.Stack(), item.ItemSlot() + (prefixNum or 0), item.ItemSlot2(), item.Container(), item.Icon(), item.Damage(), parseClasses(item), parseWornSlots(item), findItemLink(item.ID())  )
+  return SearchItem:new(item.ID(), item.Name(), item.Type(), item.Stack(), item.ItemSlot() + (prefixNum or 0), item.ItemSlot2(), item.Container(), item.Icon(), item.Damage(), parseClasses(item), parseWornSlots(item), item.ItemLink("CLICKABLE")())
 end
 
 ---@return string
