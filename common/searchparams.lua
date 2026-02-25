@@ -77,7 +77,7 @@ local function matchesClassFilter(item, filter)
   end
 
   for _, value in ipairs(item.Classes) do
-    if string.lower(value) == filter then
+    if value == filter then
       return true
     end
   end
