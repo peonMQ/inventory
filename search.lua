@@ -14,7 +14,7 @@ broadcast.prefix = broadcast.ColorWrap('[Search]', 'Cyan')
 logger.prefix = string.format("\at%s\ax", "[Search]")
 logger.postfix = function () return string.format(" %s", os.date("%X")) end
 
-local searchActor = actors.register(function(message) end)
+local searchActor = actors.register("search", function(message) end)
 
 local next = next
 local args = {...}
@@ -151,6 +151,7 @@ local function findAndReportItems(reportToo, params)
 
     broadcast.SuccessAll("Completed search for <%s>", params)
   end
+
 end
 
 findAndReportItems(args[1], args[2])
