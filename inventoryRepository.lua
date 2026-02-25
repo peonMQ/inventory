@@ -90,10 +90,11 @@ local function getItems(terms)
 
   local results = {}
   for row in stmt:nrows() do 
+    local item = _searchItem:new(row.item_id, row.item_name, row.item_type, row.amount, row.inventory_slot, row.bag_slot, row.container, row.icon, row.damage, splitComma(row.classes), splitComma(row.worn_slots), row.item_link)
     if not results[row.character_name] then
-      results[row.character_name] = {_searchItem:new(row.item_id, row.item_name, row.item_type, row.amount, row.inventory_slot, row.bag_slot, row.container, row.icon, row.damage, splitComma(row.classes), row.item_link)}
+      results[row.character_name] = {item}
     else
-      table.insert(results[row.character_name], _searchItem:new(row.item_id, row.item_name, row.item_type, row.amount, row.inventory_slot, row.bag_slot, row.container, row.icon, row.damage, splitComma(row.classes), splitComma(row.worn_slots), row.item_link))
+      table.insert(results[row.character_name], item)
     end
   end
   stmt:finalize()
