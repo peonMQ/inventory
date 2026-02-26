@@ -145,9 +145,9 @@ local function findAndReportItems(reportToo, params)
   if not next(searchResults) then
     logger.Info("Done, nothing found for <%s>", params)
   else
-    for _,searchitem in ipairs(searchResults) do
+    for index, searchitem in ipairs(searchResults) do
       logger.Debug("Reporting <%s> to <%s> to { mailbox = %s, script= %s}", searchitem.Name, reportToo, state.SearchMailBox, runningDir:RelativeToMQLuaPath())
-      searchActor:send({ mailbox = state.SearchMailBox, script=runningDir:RelativeToMQLuaPath(), character=reportToo }, searchItemResult:convert(mq.TLO.Me.Name(), true, searchitem))
+      searchActor:send({ mailbox = state.SearchMailBox, script=runningDir:RelativeToMQLuaPath(), character=reportToo }, searchItemResult:convert(index, mq.TLO.Me.Name(), true, searchitem))
     end
 
     broadcast.SuccessAll("Completed search for <%s>", params)

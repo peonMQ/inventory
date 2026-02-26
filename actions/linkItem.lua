@@ -13,7 +13,7 @@ local function linkitem(character, item)
   if character == mq.TLO.Me.Name() then
     mq.cmdf("/say %s", item.ItemLink)
   else
-    local command = string.format('/lua run %s "%s"', searchScriptPath, item.Id)
+    local command = string.format('/lua run %s "%s"', searchScriptPath, item.ItemId)
     remoteAction(command, character)
   end
 end

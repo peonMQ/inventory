@@ -68,7 +68,7 @@ local function search_db(searchParams)
     if not contains_ignore_case(clients, characterName:lower()) then
       local toonFoundItems = matchItems(searchParams, items)
       for _, value in ipairs(toonFoundItems) do
-        table.insert(foundItems, searchItemResult:convert(characterName, false, value))
+        table.insert(foundItems, searchItemResult:convert(#foundItems, characterName, false, value))
       end
     end
   end

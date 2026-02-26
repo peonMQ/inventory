@@ -1,6 +1,7 @@
 local state = {
   SearchMailBox = 'search',
   Searchterms = '',
+  SelectionFlags = 0x0,
 ---@type SearchItemResult[]
   SearchResult = {}
 }
@@ -12,6 +13,7 @@ end
 
 
 state.ResetResult = function()
+  state.SelectionFlags = 0x0
   state.SearchResult = {}
 end
 

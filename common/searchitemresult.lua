@@ -1,7 +1,9 @@
 ---@class SearchItemResult
+---@field public Id number
 ---@field public CharacterName string
 ---@field public Online boolean
----@field public Id number
+---@field public Selected boolean
+---@field public ItemId number
 ---@field public Name string
 ---@field public Type string
 ---@field public Icon number
@@ -13,18 +15,21 @@
 ---@field public Classes string[]
 ---@field public WornSlots string[]
 ---@field public ItemLink string
-local SearchItemResult = {CharacterName  = "", Online = false, Id = 0, Name = "", Type = "", Icon = 0, Amount = 0, InventorySlot = 0, BagSlot = -1, Container = 0, Damage = 0, Classes = {}, WornSlots = {}, ItemLink= ""}
+local SearchItemResult = {Id = 0, CharacterName  = "", Online = false, Selected = false, ItemId = 0, Name = "", Type = "", Icon = 0, Amount = 0, InventorySlot = 0, BagSlot = -1, Container = 0, Damage = 0, Classes = {}, WornSlots = {}, ItemLink= ""}
 
+---@param id number
 ---@param character string
 ---@param online boolean
 ---@param item SearchItem
 ---@return SearchItemResult
-function SearchItemResult:convert (character, online, item)
+function SearchItemResult:convert (id, character, online, item)
   self.__index = self
   local o = setmetatable({}, self)
+  o.Id = id or error("Id is required.")
   o.CharacterName = character or error("CharacterName is required.")
   o.Online = online or false
-  o.Id = item.Id
+  o.Selected = false
+  o.ItemId = item.Id
   o.Name = item.Name
   o.Type = item.Type
   o.Amount = item.Amount

@@ -14,6 +14,7 @@ local function handleMessage(message)
   logger.Debug("Inventory actor message recieved.");
   if message.sender.character then
     local searchItemResult = message.content
+    searchItemResult.Id = #state.SearchResult
     table.insert(state.SearchResult, searchItemResult)
   end
 end
