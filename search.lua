@@ -5,6 +5,7 @@ local broadcast = require('broadcast/broadcast')
 local broadCastInterface = require('broadcast/broadcastinterface')("EQBC")
 local runningDir = require('lib/runningdir')
 local searchItem = require('common/searchitem')
+local searchItemResult = require('common/searchitemresult')
 local searchParams = require('common/searchparams')
 local state = require('state')
 
@@ -146,7 +147,7 @@ local function findAndReportItems(reportToo, params)
   else
     for _,searchitem in ipairs(searchResults) do
       logger.Debug("Reporting <%s> to <%s> to { mailbox = %s, script= %s}", searchitem.Name, reportToo, state.SearchMailBox, runningDir:RelativeToMQLuaPath())
-      searchActor:send({ mailbox = state.SearchMailBox, script=runningDir:RelativeToMQLuaPath(), character=reportToo }, searchitem)
+      searchActor:send({ mailbox = state.SearchMailBox, script=runningDir:RelativeToMQLuaPath(), character=reportToo }, searchItemResult:convert(mq.TLO.Me.Name(), true, searchitem))
     end
 
     broadcast.SuccessAll("Completed search for <%s>", params)

@@ -1,6 +1,7 @@
 local logger = require 'knightlinc/Write'
 local repository = require 'inventoryRepository'
 local broadcaster = require('broadcast/broadcastinterface')("EQBC")
+local searchItemResult = require('common/searchitemresult')
 
 local next = next
 
@@ -57,7 +58,7 @@ end
 
 
 ---@param searchParams SearchParams
----@return table<string, { online: boolean, searchResult: SearchItem }>
+---@return SearchItemResult[]
 local function search_db(searchParams)
   logger.Debug('Starting search in export files for offline characters')
   local clients = broadcaster.ConnectedClients()
@@ -66,8 +67,8 @@ local function search_db(searchParams)
   for characterName, items in pairs(exportedItems) do
     if not contains_ignore_case(clients, characterName:lower()) then
       local toonFoundItems = matchItems(searchParams, items)
-      if next(toonFoundItems) then
-        foundItems[characterName] = { online = false, searchResult = matchItems(searchParams, items) }
+      for _, value in ipairs(toonFoundItems) do
+        table.insert(foundItems, searchItemResult:convert(characterName, false, value))
       end
     end
   end

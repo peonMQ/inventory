@@ -3,7 +3,7 @@ local logger = require('knightlinc/Write')
 local remoteAction = require('actions/remoteAction')
 
 ---@param character string
----@param item SearchItem
+---@param item SearchItemResult
 local function requestItem(character, item)
   if item.InventorySlot >= 2000 then
     logger.Warn("Cannot pick up item from a bankslot.")

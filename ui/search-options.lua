@@ -52,14 +52,25 @@ local function renderSearchOptions()
   local isSearchFocused = imgui.IsItemFocused()
   imgui.PopItemWidth()
 
+  imgui.PushItemWidth(200)
   slotFilter = drawComboBoxFilter("Slot", slotFilter, filters.SlotFilter)
+  imgui.PopItemWidth()
+  imgui.PushItemWidth(200)
   typeFilter = drawComboBoxFilter("Type", typeFilter, filters.TypeFilter)
+  imgui.PopItemWidth()
+  imgui.PushItemWidth(200)
   locationFilter = drawComboBoxFilter("Location", locationFilter, filters.LocationFilter)
+  imgui.PopItemWidth()
+  imgui.PushItemWidth(200)
   classFilter = drawComboBoxFilter("Class", classFilter, filters.ClassFilter)
+  imgui.PopItemWidth()
 
   y = imgui.GetCursorPosY()
   imgui.SetCursorPosY(y+5)
   searchOffline, _ = imgui.Checkbox('Incl. Offline', searchOffline)
+
+  y = imgui.GetCursorPosY()
+  imgui.SetCursorPosY(y+5)
 
   if imgui.Button("Search") or (isSearchFocused and imgui.IsKeyPressed(ImGuiKey.Enter)) then
     if state.Searchterms ~= '*' and #state.Searchterms < minSearchTextLength then

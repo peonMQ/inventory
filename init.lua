@@ -43,8 +43,18 @@ local itemsearch = function()
   imgui.SetWindowSize(430, 277, ImGuiCond.FirstUseEver)
   if shouldDrawGUI then
     LeftPaneWindow()
+    
+    local left_pos  = imgui.GetItemRectMinVec()
+    local left_max  = imgui.GetItemRectMaxVec()
+
     imgui.SameLine()
     RightPaneWindow()
+
+    imgui.GetWindowDrawList():AddRectFilled(
+      ImVec2(left_max.x + 4, left_pos.y),
+      ImVec2(left_max.x + 5, left_max.y),
+      imgui.GetColorU32(ImGuiCol.Separator, 1.0)
+    )
   end
 
   imgui.End()

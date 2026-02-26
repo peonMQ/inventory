@@ -10,7 +10,7 @@ local searchScriptPath = runningDir:Parent():GetRelativeToMQLuaPath("/search")
 ---@param searchParams SearchParams
 ---@param includeOffline boolean
 local function search(searchParams, includeOffline)
-  state.SearchResult = {}
+  state.ResetResult()
   if includeOffline then
     state.SearchResult = exportSearch(searchParams)
   end

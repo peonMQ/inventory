@@ -7,7 +7,7 @@ local remoteAction = require('actions/remoteAction')
 local searchScriptPath = runningDir:Parent():GetRelativeToMQLuaPath("/linkitem")
 
 ---@param character string
----@param item SearchItem
+---@param item SearchItemResult
 local function linkitem(character, item)
   logger.Debug('Trigger linkitem action')
   if character == mq.TLO.Me.Name() then

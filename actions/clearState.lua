@@ -1,8 +1,7 @@
 local state = require 'state'
 
 local function clearState()
-  state.Searchterms = ''
-  state.SearchResult = {}
+  state.Reset()
 end
 
 return clearState
