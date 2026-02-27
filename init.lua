@@ -8,8 +8,8 @@ packageMan.Require('lsqlite3')
 local renderOptions = require 'ui/search-options'
 local renderTable = require 'ui/items_table'
 
-logger.prefix = string.format("[%s][\at%s\ax]", os.date("%X"), "Inventory")
--- logger.postfix = function () return string.format(" %s", os.date("%X")) end
+logger.prefix = string.format("\at%s\ax", "[Inventory]")
+logger.postfix = function () return string.format(" %s", os.date("%X")) end
 -- logger.loglevel = 'debug'
 
 require('actor')

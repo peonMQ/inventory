@@ -1,5 +1,6 @@
 local mq = require 'mq'
 local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
 local remoteAction = require('actions/remoteAction')
 
 ---@param character string
@@ -7,12 +8,14 @@ local remoteAction = require('actions/remoteAction')
 local function requestItem(character, item)
   if item.InventorySlot >= 2000 then
     logger.Warn("Cannot pick up item from a bankslot.")
+    broadcast.WarnAll("Cannot pick up item from a bankslot.")
     return
   end
 
   local spawn = mq.TLO.Spawn('pc ='..character)
   if not spawn() or spawn.Distance3D() > 15 then
     logger.Warn("Character not online or outisde trade range.")
+    broadcast.WarnAll("Character not online or outisde trade range.")
     return
   end
 

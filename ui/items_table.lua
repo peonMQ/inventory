@@ -133,9 +133,9 @@ for _, result in ipairs(searchResult) do
     imgui.TableNextColumn()
     imgui.Text(string.format("%d", result.Amount))
     imgui.TableNextColumn()
-    imgui.Text(result.HumanInventorySlot(result))
+    imgui.Text(result:HumanInventorySlot())
     imgui.TableNextColumn()
-    imgui.Text(result.HumanBagSlot(result))
+    imgui.Text(result:HumanBagSlot())
   end
 end
 

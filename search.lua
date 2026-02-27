@@ -2,20 +2,21 @@ local mq = require('mq')
 local actors = require("actors")
 local logger = require('knightlinc/Write')
 local broadcast = require('broadcast/broadcast')
-local broadCastInterface = require('broadcast/broadcastinterface')("EQBC")
 local runningDir = require('lib/runningdir')
 local searchItem = require('common/searchitem')
-local searchItemResult = require('common/searchitemresult')
 local searchParams = require('common/searchparams')
 local state = require('state')
 
 runningDir = runningDir:new(2)
 
+local reportScript = runningDir:RelativeToMQLuaPath()
+
 broadcast.prefix = broadcast.ColorWrap('[Search]', 'Cyan')
 logger.prefix = string.format("\at%s\ax", "[Search]")
 logger.postfix = function () return string.format(" %s", os.date("%X")) end
+-- logger.loglevel = 'info'
 
-local searchActor = actors.register("search", function(message) end)
+-- local searchActor = actors.register("search", function(message) end)
 
 local next = next
 local args = {...}
@@ -145,9 +146,12 @@ local function findAndReportItems(reportToo, params)
   if not next(searchResults) then
     logger.Info("Done, nothing found for <%s>", params)
   else
-    for index, searchitem in ipairs(searchResults) do
-      logger.Debug("Reporting <%s> to <%s> to { mailbox = %s, script= %s}", searchitem.Name, reportToo, state.SearchMailBox, runningDir:RelativeToMQLuaPath())
-      searchActor:send({ mailbox = state.SearchMailBox, script=runningDir:RelativeToMQLuaPath(), character=reportToo }, searchItemResult:convert(index, mq.TLO.Me.Name(), true, searchitem))
+    logger.Info("Done, found %d items for <%s>", #searchResults, params)
+    for _, searchitem in pairs(searchResults) do
+      logger.Debug("Reporting <%s> to <%s> to { mailbox = %s, script= %s}", searchitem.Name, reportToo, state.SearchMailBox, reportScript)
+      actors.send({ mailbox = state.SearchMailBox, script=reportScript, character=reportToo }
+        , {Character = mq.TLO.Me.Name(), Item = searchitem}
+      )
     end
 
     broadcast.SuccessAll("Completed search for <%s>", params)

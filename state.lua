@@ -1,5 +1,5 @@
 local state = {
-  SearchMailBox = 'search',
+  SearchMailBox = 'searchresult',
   Searchterms = '',
   SelectionFlags = 0x0,
 ---@type SearchItemResult[]

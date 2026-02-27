@@ -13,7 +13,8 @@ local filters = require('ui/filters')
 
 
 local minSearchTextLength = 3
-local searchOffline = false
+local includeOffline = false
+local inclAllOnline = true
 local EnterKeyId = 13 -- https://github.com/gallexme/LuaPlugin-GTAV/blob/master/scripts/keys.lua
 local slotFilter = filters.SlotFilter[1]
 local typeFilter = filters.TypeFilter[1]
@@ -67,7 +68,11 @@ local function renderSearchOptions()
 
   y = imgui.GetCursorPosY()
   imgui.SetCursorPosY(y+5)
-  searchOffline, _ = imgui.Checkbox('Incl. Offline', searchOffline)
+  includeOffline, _ = imgui.Checkbox('Incl. Offline', includeOffline)
+
+  y = imgui.GetCursorPosY()
+  imgui.SetCursorPosY(y+5)
+  inclAllOnline, _ = imgui.Checkbox('Search All Toons', inclAllOnline)
 
   y = imgui.GetCursorPosY()
   imgui.SetCursorPosY(y+5)
@@ -76,8 +81,15 @@ local function renderSearchOptions()
     if state.Searchterms ~= '*' and #state.Searchterms < minSearchTextLength then
       logger.Error("Searchtext is to short <%d>, must me minimum %d characters.", #state.Searchterms, minSearchTextLength)
     else
-      search(searchParams:new(state.Searchterms, slotFilter.key, typeFilter.key, classFilter.key, locationFilter.key), searchOffline)
+      search(searchParams:new(state.Searchterms, slotFilter.key, typeFilter.key, classFilter.key, locationFilter.key), includeOffline, inclAllOnline)
     end
+  end
+
+  y = imgui.GetCursorPosY()
+  imgui.SetCursorPosY(y+5)
+  imgui.Separator()
+  if imgui.Button("Request item") then
+    clearState()
   end
 end
 

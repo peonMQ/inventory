@@ -1,11 +1,10 @@
 local actors = require("actors")
 local logger = require 'knightlinc/Write'
 local state = require('state')
-local searchItem = require('common/searchitem')
+local searchItemResult = require('common/searchitemresult')
 
 ---@class SearchMessage: Message
----@field content SearchItemResult
----@field reply fun()
+---@field content {Character: string, Item: SearchItem}
 ---@field send fun(message: SearchItemResult)
 
 
@@ -13,10 +12,11 @@ local searchItem = require('common/searchitem')
 local function handleMessage(message)
   logger.Debug("Inventory actor message recieved.");
   if message.sender.character then
-    local searchItemResult = message.content
-    searchItemResult.Id = #state.SearchResult
+    local searchItemResult = searchItemResult:convert(#state.SearchResult, message.content.Character, true, message.content.Item)
     table.insert(state.SearchResult, searchItemResult)
   end
+
+  message:reply(0, {})
 end
 
-actors.register(state.SearchMailBox, handleMessage)
+return actors.register(state.SearchMailBox, handleMessage)
