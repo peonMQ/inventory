@@ -4,7 +4,7 @@ local imgui = require 'ImGui'
 local logger = require 'knightlinc/Write'
 local state = require 'state'
 local renderCombobox = require ('ui/controls/combobox')
-local switchControl = require("ui/controls/switch2")
+local switchControl = require("ui/controls/switch")
 local autoinventory = require('actions/autoinventory')
 local clearState = require('actions/clearState')
 local export = require('actions/export')
@@ -23,6 +23,7 @@ local locationFilter = filters.LocationFilter[1]
 local classFilter = filters.ClassFilter[1]
 
 local includeOfflineSwitch = switchControl.new({ id = "includeOfflineSwitch" })
+local inclAllOnlineSwitch = switchControl.new({ id = "inclAllOnlineSwitch" })
 
 local function drawComboBoxFilter(label, filter, filterOptions)
   return renderCombobox(label, filter, filterOptions, function(option) return option.value end)
@@ -71,12 +72,11 @@ local function renderSearchOptions()
 
   y = imgui.GetCursorPosY()
   imgui.SetCursorPosY(y+5)
-  -- includeOffline, _ = imgui.Checkbox('Incl. Offline', includeOffline)
   includeOffline = includeOfflineSwitch:draw('Incl. Offline', includeOffline)
 
   y = imgui.GetCursorPosY()
   imgui.SetCursorPosY(y+5)
-  inclAllOnline, _ = imgui.Checkbox('Search All Toons', inclAllOnline)
+  inclAllOnline = inclAllOnlineSwitch:draw('Incl. All Online', inclAllOnline)
 
   y = imgui.GetCursorPosY()
   imgui.SetCursorPosY(y+5)
