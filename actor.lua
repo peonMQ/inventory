@@ -1,5 +1,5 @@
 local actors = require("actors")
-local logger = require 'knightlinc/Write'
+local logger = require('knightlinc/Write')
 local state = require('state')
 local searchItemResult = require('common/searchitemresult')
 
